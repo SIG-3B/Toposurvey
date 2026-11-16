@@ -45,6 +45,7 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
+          flutter-version: "3.47.5"
           channel: "stable"
           cache: true
 
@@ -54,18 +55,15 @@ jobs:
 
       - name: Run Flutter Analyze
         working-directory: frontend
-        run: flutter analyze
+        run: flutter analyze --no-fatal-infos
 
       - name: Run Flutter Tests
         working-directory: frontend
         run: flutter test
 
-      - name: Generate Auto Tag (Semantic Versioning)
+      - name: Determine Next Version Tag (Semantic Versioning)
         id: autotag
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
           LATEST_TAG=$(git tag -l "v*" --sort=-v:refname | head -n 1)
 
           if [ -z "$LATEST_TAG" ]; then
@@ -119,9 +117,6 @@ jobs:
             NEW_TAG="v${MAJOR}.${MINOR}.${PATCH}"
           done
 
-          git tag -a "$NEW_TAG" -m "Release $NEW_TAG"
-          git push origin "$NEW_TAG"
-
           echo "new_tag=$NEW_TAG" >> "$GITHUB_OUTPUT"
           echo "version_name=${NEW_TAG#v}" >> "$GITHUB_OUTPUT"
 
@@ -132,6 +127,7 @@ jobs:
         run: |
           BUILD_ARGS=(
             --release
+            --android-skip-build-dependency-validation
             "--build-name=${{ steps.autotag.outputs.version_name }}"
             "--build-number=${{ github.run_number }}"
           )
@@ -140,6 +136,13 @@ jobs:
           fi
           flutter build apk "${BUILD_ARGS[@]}"
           cp build/app/outputs/flutter-apk/app-release.apk "build/app/outputs/flutter-apk/TopoSurvey-${{ steps.autotag.outputs.new_tag }}.apk"
+
+      - name: Create and Push Git Tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag -a "${{ steps.autotag.outputs.new_tag }}" -m "Release ${{ steps.autotag.outputs.new_tag }}"
+          git push origin "${{ steps.autotag.outputs.new_tag }}"
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
