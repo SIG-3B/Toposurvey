@@ -1,0 +1,12 @@
+# Python and local SQLite
+__pycache__/
+*.py[cod]
+.venv/
+backend/*.sqlite3*
+
+# Local editor and environment files
+.idea/
+.vscode/
+.env
+Thumbs.db
+Desktop.ini
