@@ -7,6 +7,16 @@ menyediakan API survei dengan penyimpanan SQLite.
 Ukur lintang, bujur, dan elevasi, lalu lihat posisi serta titik tersimpan di
 peta. Riwayat menyediakan detail dan penghapusan survei.
 
+## Unduh APK (GitHub Release)
+
+APK siap pasang dapat diunduh langsung melalui halaman rilis GitHub berikut:
+
+- **Halaman Rilis (`v1.0.1`):** [GitHub Release v1.0.1](https://github.com/SIG-3B/Toposurvey/releases/tag/v1.0.1)
+- **Unduh Langsung APK:** [TopoSurvey-v1.0.1.apk](https://github.com/SIG-3B/Toposurvey/releases/download/v1.0.1/TopoSurvey-v1.0.1.apk)
+- **Semua Rilis Terbaru:** [GitHub Releases](https://github.com/SIG-3B/Toposurvey/releases)
+
+---
+
 - `frontend/` berisi aplikasi Flutter dan Dart dengan Material 3, Geolocator,
   Flutter Map, LatLong2, OpenStreetMap, dan `http`. Layar, model, layanan,
   dan widget peta berada di `frontend/lib/`. Uji Flutter ada di `frontend/test/`.
