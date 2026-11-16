@@ -13,7 +13,7 @@ penyimpanan lokal perangkat tanpa perlu koneksi server.
 
 APK siap pasang dapat diunduh langsung melalui halaman rilis GitHub berikut:
 
-- **Halaman Rilis (`v1.0.1`):** [GitHub Release v1.1.0](https://github.com/SIG-3B/Toposurvey/releases/tag/v1.1.0)
+- **Halaman Rilis (`v1.1.0`):** [GitHub Release v1.1.0](https://github.com/SIG-3B/Toposurvey/releases/tag/v1.1.0)
 - **Unduh Langsung APK:** [TopoSurvey-v1.1.0.apk](https://github.com/SIG-3B/Toposurvey/releases/download/v1.1.0/TopoSurvey-v1.1.0.apk)
 - **Semua Rilis Terbaru:** [GitHub Releases](https://github.com/SIG-3B/Toposurvey/releases)
 
