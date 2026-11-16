@@ -45,7 +45,7 @@ Invoke-RestMethod http://127.0.0.1:8000/api/health
 ```
 
 Jika API dan tabel survei dapat diakses, responsnya HTTP 200 dengan
-`{"status":"ok","database":"ok"}`. Backend membuat tabel `surveys` di
+`{"status":"ok","database":"ok"}`. Saat dijalankan lokal, backend membuat tabel `surveys` di
 `backend/toposurvey.sqlite3` saat startup. Menjalankan ulang server tetap
 menggunakan file database yang sama.
 
@@ -70,6 +70,16 @@ Jika elevasi tidak tersedia, permintaan ditolak dengan `422`. Server menetapkan
 `created_at` dalam format ISO 8601 UTC saat menyimpan survei. ID yang tidak
 ditemukan menghasilkan `404`. Gangguan SQLite saat server berjalan
 menghasilkan `503`. Dokumentasi interaktif tersedia di `/docs`.
+
+## SQLite di Railway
+
+Pasang volume pada layanan backend dengan mount path `/data`. Backend membaca
+`RAILWAY_VOLUME_MOUNT_PATH` yang disediakan Railway dan menyimpan database di
+`/data/toposurvey.sqlite3`. [Panduan Railway Volume](https://docs.railway.com/volumes)
+
+Jika server sudah berisi hasil survei, cadangkan SQLite lama sebelum
+redeploy dan pindahkan salinannya ke volume. Perubahan lokasi ini tidak
+menyalin data lama secara otomatis.
 
 ## Frontend
 

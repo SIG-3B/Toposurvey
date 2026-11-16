@@ -1,4 +1,5 @@
 import logging
+import os
 import sqlite3
 from collections.abc import AsyncIterator, Iterator
 from contextlib import asynccontextmanager, closing, contextmanager
@@ -12,7 +13,10 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from pydantic import AwareDatetime, BaseModel, Field, FiniteFloat
 
-DB_PATH = Path(__file__).with_name("toposurvey.sqlite3")
+DB_PATH = (
+    Path(os.getenv("RAILWAY_VOLUME_MOUNT_PATH") or Path(__file__).parent)
+    / "toposurvey.sqlite3"
+)
 logger = logging.getLogger(__name__)
 
 
