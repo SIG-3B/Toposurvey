@@ -5,9 +5,10 @@ import 'screens/history_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/survey_screen.dart';
 import 'services/api_service.dart';
+import 'services/local_database_service.dart';
 import 'services/location_service.dart';
 
-void main() => runApp(TopoSurveyApp.connected(api: ApiService()));
+void main() => runApp(TopoSurveyApp.local());
 
 class TopoSurveyApp extends StatelessWidget {
   const TopoSurveyApp({
@@ -19,6 +20,20 @@ class TopoSurveyApp extends StatelessWidget {
     this.saveSurvey,
     this.deleteSurvey,
   });
+
+  factory TopoSurveyApp.local({
+    LocalDatabaseService? database,
+    LocationService location = const LocationService(),
+  }) {
+    final storage = database ?? LocalDatabaseService();
+    return TopoSurveyApp(
+      location: location,
+      loadSurveys: storage.loadSurveys,
+      loadSurvey: storage.loadSurvey,
+      saveSurvey: storage.saveSurvey,
+      deleteSurvey: storage.deleteSurvey,
+    );
+  }
 
   factory TopoSurveyApp.connected({
     required ApiService api,

@@ -1,11 +1,13 @@
 # TopoSurvey
 
 Aplikasi Android Material 3 untuk mengukur koordinat dan elevasi dengan layanan
-lokasi ponsel dan menampilkan posisi di peta OpenStreetMap. Backend FastAPI
-menyediakan API survei dengan penyimpanan SQLite.
+lokasi ponsel, menampilkan posisi di peta OpenStreetMap, dan menyimpan hasil
+survei secara **lokal & offline menggunakan SQLite di perangkat**. Proyek ini juga
+menyertakan folder `backend/` (FastAPI + SQLite) untuk pengujian REST API lokal.
 
 Ukur lintang, bujur, dan elevasi, lalu lihat posisi serta titik tersimpan di
-peta. Riwayat menyediakan detail dan penghapusan survei.
+peta. Riwayat menyediakan detail dan penghapusan survei secara langsung dari
+penyimpanan lokal perangkat tanpa perlu koneksi server.
 
 ## Unduh APK (GitHub Release)
 
@@ -18,16 +20,17 @@ APK siap pasang dapat diunduh langsung melalui halaman rilis GitHub berikut:
 ---
 
 - `frontend/` berisi aplikasi Flutter dan Dart dengan Material 3, Geolocator,
-  Flutter Map, LatLong2, OpenStreetMap, dan `http`. Layar, model, layanan,
-  dan widget peta berada di `frontend/lib/`. Uji Flutter ada di `frontend/test/`.
-- `backend/` berisi REST API FastAPI untuk Python dan database SQLite yang
-  diakses melalui `sqlite3`.
+  Flutter Map, LatLong2, OpenStreetMap, serta penyimpanan SQLite lokal (`sqlite3`
+  dan `path_provider`). Layar, model, layanan, dan widget peta berada di
+  `frontend/lib/`. Uji Flutter ada di `frontend/test/`.
+- `backend/` berisi REST API FastAPI untuk Python dan database SQLite lokal
+  (`backend/toposurvey.sqlite3`) yang tetap tersedia untuk pengujian REST API.
 
 Siapkan Flutter 3.47.4 (Dart 3.13.3), Android SDK dan emulator atau perangkat
-Android, serta Python 3.11 atau lebih baru. Periksa instalasi Android dengan
-`flutter doctor -v`.
+Android, serta Python 3.11 atau lebih baru (opsional untuk menjalankan `backend/`).
+Periksa instalasi Android dengan `flutter doctor -v`.
 
-## Backend
+## Backend (Opsional — REST API Lokal)
 
 Dari root proyek di PowerShell:
 
@@ -45,7 +48,7 @@ Invoke-RestMethod http://127.0.0.1:8000/api/health
 ```
 
 Jika API dan tabel survei dapat diakses, responsnya HTTP 200 dengan
-`{"status":"ok","database":"ok"}`. Saat dijalankan lokal, backend membuat tabel `surveys` di
+`{"status":"ok","database":"ok"}`. Backend membuat tabel `surveys` di
 `backend/toposurvey.sqlite3` saat startup. Menjalankan ulang server tetap
 menggunakan file database yang sama.
 
@@ -71,35 +74,22 @@ Jika elevasi tidak tersedia, permintaan ditolak dengan `422`. Server menetapkan
 ditemukan menghasilkan `404`. Gangguan SQLite saat server berjalan
 menghasilkan `503`. Dokumentasi interaktif tersedia di `/docs`.
 
-## SQLite di Railway
-
-Pasang volume pada layanan backend dengan mount path `/data`. Backend membaca
-`RAILWAY_VOLUME_MOUNT_PATH` yang disediakan Railway dan menyimpan database di
-`/data/toposurvey.sqlite3`. [Panduan Railway Volume](https://docs.railway.com/volumes)
-
-Jika server sudah berisi hasil survei, cadangkan SQLite lama sebelum
-redeploy dan pindahkan salinannya ke volume. Perubahan lokasi ini tidak
-menyalin data lama secara otomatis.
-
 ## Frontend
 
-Nyalakan emulator Android, lalu jalankan dari root proyek di terminal baru:
+Nyalakan emulator atau hubungkan perangkat Android, lalu jalankan dari root proyek:
 
 ```powershell
 cd frontend
 flutter pub get
 flutter analyze
 flutter test
-flutter run --dart-define=API_BASE_URL=http://10.0.2.2:8000
+flutter run
 ```
 
-`API_BASE_URL` dibaca saat kompilasi dan default ke `http://10.0.2.2:8000`.
-Alamat `10.0.2.2` mengarah ke [komputer host dari emulator Android](https://developer.android.com/studio/run/emulator-networking-address). Untuk HP
-fisik di jaringan yang sama, gunakan IP LAN komputer sebagai nilai
-`API_BASE_URL` (misalnya `http://192.168.1.20:8000`). Jika koneksi terhalang,
-izinkan port 8000 pada firewall untuk jaringan privat yang dipercaya.
-Gunakan HTTP untuk pengembangan lokal dengan build debug. Gunakan HTTPS
-untuk build rilis.
+Secara default aplikasi berjalan menggunakan `TopoSurveyApp.local()`, sehingga
+seluruh penyimpanan dan pembacaan riwayat survei dilakukan **secara offline
+menggunakan database SQLite lokal di perangkat** (`toposurvey.sqlite3` pada
+direktori dokumen aplikasi) tanpa memerlukan server eksternal.
 
 Buka tab **Survei**, ketuk **Aktifkan GPS** jika muncul, lalu beri izin lokasi
 untuk melihat garis
@@ -122,14 +112,13 @@ berjalan apabila tile gagal dimuat, dengan tombol untuk mencoba memuat peta lagi
 Atribusi peta menautkan [OpenStreetMap](https://www.openstreetmap.org/copyright).
 
 Setelah koordinat dan elevasi valid, pilih **Simpan Hasil Survei**. Aplikasi
-mengirim satu pembacaan ke FastAPI. Setelah server mengonfirmasi, Beranda,
-Riwayat, dan marker hijau di peta memuat ulang data SQLite. Riwayat memakai
-`created_at` dari backend sebagai waktu simpan dan menampilkannya dalam zona
-waktu perangkat. Gunakan Riwayat untuk melihat detail atau menghapus survei.
+menyimpan pembacaan langsung ke SQLite lokal perangkat. Beranda, Riwayat, dan
+marker hijau di peta langsung memuat ulang data dari SQLite lokal. Riwayat
+memakai `created_at` dalam UTC sebagai waktu simpan dan menampilkannya dalam zona
+waktu perangkat. Gunakan Riwayat untuk melihat detail, menghapus survei, atau
+mengekspor data ke format **GeoJSON (`FeatureCollection`)** lewat tombol
+**Ekspor GeoJSON** (bisa langsung **Unduh (.geojson)** ke folder `Download/`,
+**Salin** ke *clipboard*, atau **Bagikan** ke aplikasi lain).
 
-Pengukuran GPS tetap tersedia saat backend tidak terjangkau. Jumlah survei
-akan ditandai belum tersedia sampai berhasil dimuat. Aplikasi memerlukan akses
-ke backend untuk menyimpan titik dan tidak mengantrekan penyimpanan luring.
-Jika permintaan simpan kehabisan waktu, cek Riwayat sebelum mencoba lagi.
 Untuk menguji GPS lapangan, gunakan ponsel Android dengan layanan lokasi
 aktif. Lokasi dari emulator adalah simulasi.

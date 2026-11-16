@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 class SurveyMeasurement {
   const SurveyMeasurement({
     required this.latitude,
@@ -47,4 +49,31 @@ class Survey {
   final int id;
   final SurveyMeasurement measurement;
   final DateTime createdAt;
+
+  Map<String, Object?> toGeoJsonFeature() => {
+    'type': 'Feature',
+    'id': id,
+    'geometry': {
+      'type': 'Point',
+      'coordinates': [
+        measurement.longitude,
+        measurement.latitude,
+        measurement.elevation,
+      ],
+    },
+    'properties': {
+      'id': id,
+      'latitude': measurement.latitude,
+      'longitude': measurement.longitude,
+      'elevation': measurement.elevation,
+      'created_at': createdAt.toUtc().toIso8601String(),
+    },
+  };
 }
+
+String surveysToGeoJson(List<Survey> surveys) => const JsonEncoder.withIndent(
+  '  ',
+).convert({
+  'type': 'FeatureCollection',
+  'features': surveys.map((survey) => survey.toGeoJsonFeature()).toList(),
+});
