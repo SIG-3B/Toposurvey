@@ -272,6 +272,7 @@ void main() {
     expect(find.text('107.600000°'), findsOneWidget);
     expect(find.text('-4.5 m'), findsOneWidget);
     expect(find.text('Perkiraan akurasi horizontal: ±5.0 m'), findsOneWidget);
+    await tester.ensureVisible(saveButton);
     await tap(tester, saveButton);
     expect(find.text('Menyimpan…'), findsOneWidget);
     expect(find.text('Hasil survei tersimpan.'), findsNothing);
@@ -298,6 +299,11 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(find.text('Hasil survei tersimpan.'), findsOneWidget);
+    tester
+        .state<ScaffoldMessengerState>(find.byType(ScaffoldMessenger))
+        .hideCurrentSnackBar();
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(saveButton);
     await tap(tester, saveButton);
     await tester.pumpAndSettle();
     expect(
