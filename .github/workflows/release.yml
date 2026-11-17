@@ -25,6 +25,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: toposurvey-release
+  cancel-in-progress: false
+
 jobs:
   build-and-release:
     name: Test, Auto Tag, Build APK & Release
