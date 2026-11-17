@@ -1,0 +1,1222 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f6f7f2">
+    <meta
+      name="description"
+      content="TopoSurvey membantu mencatat koordinat dan elevasi, melihat titik di peta, dan menyimpan hasil survei secara offline di Android."
+    >
+    <title>TopoSurvey — Survei lapangan, lebih sederhana</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #12231b;
+        --muted: #5e7167;
+        --green: #176b48;
+        --green-soft: #eaf5ef;
+        --green-dark: #0d3f2e;
+        --mint: #dcefe1;
+        --paper: #f3f6f1;
+        --paper-strong: #edf4ee;
+        --line: rgba(20, 48, 34, 0.08);
+        --white: #fff;
+        --shadow: 0 24px 64px rgba(16, 42, 30, 0.12);
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font-synthesis: none;
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        background:
+          radial-gradient(circle at top left, rgba(32, 130, 96, 0.12), transparent 32%),
+          linear-gradient(180deg, #f7faf7 0%, var(--paper) 100%);
+        color: var(--ink);
+      }
+
+      a {
+        color: inherit;
+      }
+
+      .shell {
+        width: min(1120px, calc(100% - 48px));
+        margin: 0 auto;
+      }
+
+      .site-header {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        display: flex;
+        min-height: 82px;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid var(--line);
+        background: rgba(247, 250, 247, 0.76);
+        backdrop-filter: blur(20px);
+      }
+
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 11px;
+        color: var(--ink);
+        font-size: 19px;
+        font-weight: 750;
+        letter-spacing: -0.04em;
+        text-decoration: none;
+      }
+
+      .brand-mark {
+        display: grid;
+        width: 38px;
+        height: 38px;
+        place-items: center;
+        border-radius: 12px;
+        background: linear-gradient(135deg, var(--green) 0%, #2ea376 100%);
+        color: var(--white);
+        box-shadow: 0 12px 28px rgba(23, 107, 72, 0.28);
+      }
+
+      .brand-mark svg {
+        width: 23px;
+        height: 23px;
+      }
+
+      .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 30px;
+        color: var(--muted);
+        font-size: 14px;
+        font-weight: 600;
+      }
+
+      .nav-links a {
+        text-decoration: none;
+      }
+
+      .nav-links a:hover,
+      .text-link:hover {
+        color: var(--green);
+      }
+
+      .nav-links .nav-cta {
+        padding: 11px 16px;
+        border: 1px solid rgba(23, 107, 72, 0.08);
+        border-radius: 999px;
+        background: linear-gradient(180deg, #ffffff 0%, #edf6f0 100%);
+        color: var(--ink);
+        box-shadow: 0 8px 22px rgba(16, 42, 30, 0.06);
+      }
+
+      .hero {
+        display: grid;
+        min-height: 650px;
+        grid-template-columns: 1.02fr 0.98fr;
+        align-items: center;
+        gap: 52px;
+        padding: 76px 0 84px;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        margin: 0 0 22px;
+        color: var(--green);
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.13em;
+        text-transform: uppercase;
+      }
+
+      .eyebrow::before {
+        width: 22px;
+        height: 2px;
+        background: currentColor;
+        content: "";
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin-top: 0;
+      }
+
+      h1 {
+        max-width: 610px;
+        margin-bottom: 22px;
+        font-size: clamp(44px, 6vw, 72px);
+        font-weight: 760;
+        letter-spacing: -0.075em;
+        line-height: 1.04;
+      }
+
+      h1 span {
+        color: var(--green);
+      }
+
+      .hero-copy {
+        max-width: 490px;
+        margin-bottom: 30px;
+        color: var(--muted);
+        font-size: 17px;
+        line-height: 1.8;
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .button {
+        display: inline-flex;
+        min-height: 50px;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        padding: 0 20px;
+        border: 1px solid transparent;
+        border-radius: 999px;
+        font-size: 14px;
+        font-weight: 700;
+        text-decoration: none;
+        transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+      }
+
+      .button:hover {
+        transform: translateY(-2px);
+      }
+
+      .button-primary {
+        background: linear-gradient(135deg, var(--green) 0%, #1e8d63 100%);
+        color: var(--white);
+        box-shadow: 0 18px 26px rgba(23, 107, 72, 0.22);
+      }
+
+      .button-primary:hover {
+        background: linear-gradient(135deg, #0f5a3b 0%, var(--green) 100%);
+      }
+
+      .button-secondary {
+        border-color: rgba(18, 35, 27, 0.08);
+        background: rgba(255, 255, 255, 0.75);
+        box-shadow: 0 12px 24px rgba(19, 36, 29, 0.04);
+      }
+
+      .button svg {
+        width: 17px;
+        height: 17px;
+      }
+
+      .trust-note {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        margin: 22px 0 0;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .trust-note svg {
+        width: 17px;
+        height: 17px;
+        flex: 0 0 auto;
+        color: var(--green);
+      }
+
+      .hero-metrics {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 24px;
+      }
+
+      .hero-metrics span {
+        padding: 8px 12px;
+        border: 1px solid rgba(23, 107, 72, 0.12);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.7);
+        color: var(--green-dark);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .preview-wrap {
+        position: relative;
+        display: grid;
+        min-height: 455px;
+        place-items: center;
+      }
+
+      .preview-glow {
+        position: absolute;
+        width: min(430px, 100%);
+        aspect-ratio: 1;
+        border-radius: 50%;
+        background: radial-gradient(circle, #e0eddb 0, #e0eddb 35%, transparent 70%);
+      }
+
+      .phone {
+        position: relative;
+        width: min(308px, 78%);
+        padding: 10px;
+        border: 1px solid #dfe5dc;
+        border-radius: 34px;
+        background: #fff;
+        box-shadow: 0 28px 80px #173a2426, 0 4px 12px #173a2410;
+        transform: rotate(2deg);
+      }
+
+      .phone-screen {
+        overflow: hidden;
+        border-radius: 26px;
+        background: #f8faf7;
+      }
+
+      .phone-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 19px 17px 15px;
+      }
+
+      .phone-title {
+        margin: 0;
+        font-size: 15px;
+        font-weight: 750;
+      }
+
+      .phone-menu {
+        display: flex;
+        gap: 3px;
+      }
+
+      .phone-menu i {
+        width: 4px;
+        height: 4px;
+        border-radius: 50%;
+        background: #849188;
+      }
+
+      .map-art {
+        display: block;
+        width: 100%;
+        height: 225px;
+        background: #e8efe5;
+      }
+
+      .phone-data {
+        padding: 16px 16px 19px;
+      }
+
+      .gps-status {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        margin-bottom: 13px;
+        color: var(--green);
+        font-size: 11px;
+        font-weight: 750;
+      }
+
+      .gps-status::before {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #36a269;
+        box-shadow: 0 0 0 4px #36a26920;
+        content: "";
+      }
+
+      .reading {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px 10px;
+      }
+
+      .reading-item {
+        padding: 10px 11px;
+        border: 1px solid #e8ede7;
+        border-radius: 12px;
+        background: #fff;
+      }
+
+      .reading-label {
+        display: block;
+        margin-bottom: 5px;
+        color: #78847b;
+        font-size: 9px;
+        font-weight: 700;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+      }
+
+      .reading-value {
+        display: block;
+        font-size: 12px;
+        font-weight: 750;
+        letter-spacing: -0.025em;
+      }
+
+      .float-card {
+        position: absolute;
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        padding: 13px 15px;
+        border: 1px solid #e9eee7;
+        border-radius: 15px;
+        background: var(--white);
+        box-shadow: 0 12px 35px #173a2414;
+      }
+
+      .float-card.history {
+        right: 0;
+        bottom: 56px;
+      }
+
+      .float-card.offline {
+        top: 72px;
+        left: 0;
+      }
+
+      .float-icon {
+        display: grid;
+        width: 35px;
+        height: 35px;
+        flex: 0 0 auto;
+        place-items: center;
+        border-radius: 11px;
+        background: var(--mint);
+        color: var(--green);
+      }
+
+      .float-icon svg {
+        width: 18px;
+        height: 18px;
+      }
+
+      .float-card strong,
+      .float-card small {
+        display: block;
+      }
+
+      .float-card strong {
+        margin-bottom: 3px;
+        font-size: 12px;
+      }
+
+      .float-card small {
+        color: var(--muted);
+        font-size: 10px;
+      }
+
+      .section {
+        padding: 94px 0;
+        border-top: 1px solid var(--line);
+      }
+
+      .section-heading {
+        max-width: 600px;
+        margin-bottom: 42px;
+      }
+
+      .section-heading .eyebrow {
+        margin-bottom: 15px;
+      }
+
+      h2 {
+        margin-bottom: 13px;
+        font-size: clamp(32px, 4vw, 46px);
+        letter-spacing: -0.06em;
+        line-height: 1.1;
+      }
+
+      .section-heading > p:last-child {
+        margin-bottom: 0;
+        color: var(--muted);
+        font-size: 16px;
+        line-height: 1.75;
+      }
+
+      .features {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+      }
+
+      .feature-card {
+        min-height: 232px;
+        padding: 25px;
+        border: 1px solid var(--line);
+        border-radius: 22px;
+        background: rgba(255, 255, 255, 0.84);
+        box-shadow: 0 16px 24px rgba(16, 42, 30, 0.04);
+        transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+      }
+
+      .feature-card:hover {
+        transform: translateY(-6px);
+        border-color: rgba(23, 107, 72, 0.18);
+        box-shadow: 0 26px 48px rgba(16, 42, 30, 0.08);
+      }
+
+      .feature-icon {
+        display: grid;
+        width: 44px;
+        height: 44px;
+        margin-bottom: 25px;
+        place-items: center;
+        border-radius: 14px;
+        background: linear-gradient(135deg, #eaf7ee 0%, #dcefe1 100%);
+        color: var(--green);
+      }
+
+      .feature-icon svg {
+        width: 22px;
+        height: 22px;
+      }
+
+      h3 {
+        margin-bottom: 9px;
+        font-size: 17px;
+        letter-spacing: -0.035em;
+      }
+
+      .feature-card p {
+        margin-bottom: 0;
+        color: var(--muted);
+        font-size: 14px;
+        line-height: 1.7;
+      }
+
+      .how-section {
+        background: linear-gradient(180deg, #edf4ee 0%, #eef3ef 100%);
+      }
+
+      .steps {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+        counter-reset: step;
+      }
+
+      .step {
+        counter-increment: step;
+        padding: 26px 24px;
+        border: 1px solid rgba(16, 42, 30, 0.06);
+        border-radius: 22px;
+        background: rgba(255, 255, 255, 0.7);
+        box-shadow: 0 10px 24px rgba(16, 42, 30, 0.04);
+      }
+
+      .step-number {
+        display: grid;
+        width: 42px;
+        height: 42px;
+        margin-bottom: 18px;
+        place-items: center;
+        border: 1px solid rgba(23, 107, 72, 0.12);
+        border-radius: 50%;
+        background: rgba(23, 107, 72, 0.05);
+        color: var(--green);
+        font-size: 13px;
+        font-weight: 800;
+      }
+
+      .step-number::before {
+        content: "0" counter(step);
+      }
+
+      .step p {
+        margin-bottom: 0;
+        color: var(--muted);
+        font-size: 14px;
+        line-height: 1.7;
+      }
+
+      .download {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 32px;
+        padding: 42px;
+        border: 1px solid rgba(210, 227, 214, 0.6);
+        border-radius: 28px;
+        background: linear-gradient(135deg, var(--green-dark) 0%, #165a44 100%);
+        color: var(--white);
+        box-shadow: var(--shadow);
+      }
+
+      .download .eyebrow {
+        color: #a9d8b8;
+      }
+
+      .download h2 {
+        max-width: 510px;
+        margin-bottom: 11px;
+      }
+
+      .download-copy {
+        max-width: 540px;
+        margin-bottom: 0;
+        color: #d2e3d6;
+        font-size: 14px;
+        line-height: 1.75;
+      }
+
+      .download .button {
+        flex: 0 0 auto;
+        background: var(--white);
+        color: var(--green-dark);
+      }
+
+      .download .button:hover {
+        background: #e8f4e9;
+      }
+
+      .site-footer {
+        display: flex;
+        min-height: 100px;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        margin-top: 78px;
+        border-top: 1px solid var(--line);
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .site-footer p {
+        margin: 0;
+      }
+
+      .footer-links {
+        display: flex;
+        gap: 20px;
+      }
+
+      .text-link {
+        color: var(--ink);
+        font-weight: 650;
+        text-decoration: none;
+      }
+
+      .brand {
+        animation: fadeInDown 0.7s ease both;
+      }
+
+      .brand-mark {
+        animation: pulseSoft 4s ease-in-out infinite;
+      }
+
+      .nav-links a {
+        animation: fadeInUp 0.8s ease both;
+      }
+
+      .nav-links a:nth-child(1) { animation-delay: 0.05s; }
+      .nav-links a:nth-child(2) { animation-delay: 0.12s; }
+      .nav-links a:nth-child(3) { animation-delay: 0.18s; }
+      .nav-links a:nth-child(4) { animation-delay: 0.24s; }
+
+      .eyebrow,
+      .hero-content h1,
+      .hero-copy,
+      .actions,
+      .trust-note,
+      .hero-metrics {
+        animation: fadeInUp 0.9s ease both;
+      }
+
+      .hero-content h1 { animation-delay: 0.08s; }
+      .hero-copy { animation-delay: 0.16s; }
+      .actions { animation-delay: 0.22s; }
+      .trust-note { animation-delay: 0.28s; }
+      .hero-metrics { animation-delay: 0.34s; }
+
+      .button-primary { animation: buttonPulse 4s ease-in-out infinite; }
+      .button-secondary { animation: driftSway 6s ease-in-out infinite; }
+
+      .preview-glow {
+        animation: glowPulse 4.8s ease-in-out infinite;
+      }
+
+      .phone {
+        animation: floatPhone 7s ease-in-out infinite;
+      }
+
+      .phone-screen {
+        animation: tiltSoft 7s ease-in-out infinite alternate;
+      }
+
+      .float-card.offline {
+        animation: floatCardOne 5.4s ease-in-out infinite;
+      }
+
+      .float-card.history {
+        animation: floatCardTwo 6.8s ease-in-out infinite;
+      }
+
+      .feature-card:nth-child(1) { animation: cardRise 0.7s 0.05s both; }
+      .feature-card:nth-child(2) { animation: cardRise 0.7s 0.1s both; }
+      .feature-card:nth-child(3) { animation: cardRise 0.7s 0.15s both; }
+      .feature-card:nth-child(4) { animation: cardRise 0.7s 0.2s both; }
+      .feature-card:nth-child(5) { animation: cardRise 0.7s 0.25s both; }
+      .feature-card:nth-child(6) { animation: cardRise 0.7s 0.3s both; }
+
+      .step:nth-child(1) { animation: slideInLeft 0.8s ease both; }
+      .step:nth-child(2) { animation: slideInUp 0.8s ease both; }
+      .step:nth-child(3) { animation: slideInRight 0.8s ease both; }
+
+      .download {
+        animation: zoomInCard 0.9s ease both;
+      }
+
+      .site-footer {
+        animation: fadeInUp 0.9s ease both;
+      }
+
+      @keyframes fadeInDown {
+        from {
+          opacity: 0;
+          transform: translateY(-18px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(18px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes pulseSoft {
+        0%, 100% { transform: scale(1); box-shadow: 0 12px 28px rgba(23, 107, 72, 0.2); }
+        50% { transform: scale(1.05); box-shadow: 0 18px 32px rgba(23, 107, 72, 0.28); }
+      }
+
+      @keyframes buttonPulse {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-2px) scale(1.01); }
+      }
+
+      @keyframes driftSway {
+        0%, 100% { transform: rotate(0deg) translateX(0); }
+        50% { transform: rotate(-1.5deg) translateX(2px); }
+      }
+
+      @keyframes glowPulse {
+        0%, 100% { transform: scale(0.96); opacity: 0.7; }
+        50% { transform: scale(1.08); opacity: 1; }
+      }
+
+      @keyframes floatPhone {
+        0%, 100% { transform: translateY(0) rotate(2deg); }
+        50% { transform: translateY(-12px) rotate(1deg); }
+      }
+
+      @keyframes tiltSoft {
+        0% { transform: perspective(1000px) rotateX(0deg) rotateY(0deg); }
+        100% { transform: perspective(1000px) rotateX(2deg) rotateY(-2deg); }
+      }
+
+      @keyframes floatCardOne {
+        0%, 100% { transform: translateY(0) translateX(0); }
+        50% { transform: translateY(-10px) translateX(6px); }
+      }
+
+      @keyframes floatCardTwo {
+        0%, 100% { transform: translateY(0) translateX(0); }
+        50% { transform: translateY(-14px) translateX(-6px); }
+      }
+
+      @keyframes cardRise {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes slideInLeft {
+        from { opacity: 0; transform: translateX(-22px); }
+        to { opacity: 1; transform: translateX(0); }
+      }
+
+      @keyframes slideInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      @keyframes slideInRight {
+        from { opacity: 0; transform: translateX(22px); }
+        to { opacity: 1; transform: translateX(0); }
+      }
+
+      @keyframes zoomInCard {
+        from {
+          opacity: 0;
+          transform: scale(0.97);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+
+      @keyframes floatingBadge {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-8px); }
+      }
+
+      @keyframes orbitGlow {
+        0%, 100% { opacity: 0.5; transform: scale(1); }
+        50% { opacity: 1; transform: scale(1.08); }
+      }
+
+      @keyframes shimmer {
+        0% { background-position: -200% 0; }
+        100% { background-position: 200% 0; }
+      }
+
+      @keyframes spinSlow {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+
+      @keyframes breathe {
+        0%, 100% { transform: scale(1); opacity: 0.92; }
+        50% { transform: scale(1.04); opacity: 1; }
+      }
+
+      @keyframes ripple {
+        0% { box-shadow: 0 0 0 0 rgba(23, 107, 72, 0.25); }
+        70% { box-shadow: 0 0 0 18px rgba(23, 107, 72, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(23, 107, 72, 0); }
+      }
+
+      @keyframes pulseHalo {
+        0%, 100% { transform: scale(1); opacity: 0.5; }
+        50% { transform: scale(1.12); opacity: 1; }
+      }
+
+      @keyframes badgePop {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.08); }
+      }
+
+      @keyframes navFloat {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-2px); }
+      }
+
+      @keyframes mapScan {
+        0% { background-position: 0% 50%; }
+        100% { background-position: 100% 50%; }
+      }
+
+      @keyframes stepHighlight {
+        0%, 100% { box-shadow: 0 0 0 rgba(23, 107, 72, 0); }
+        50% { box-shadow: 0 0 0 6px rgba(23, 107, 72, 0.08); }
+      }
+
+      .hero-metrics span {
+        animation: badgePop 3.2s ease-in-out infinite;
+      }
+
+      .hero-metrics span:nth-child(2) { animation-delay: 0.2s; }
+      .hero-metrics span:nth-child(3) { animation-delay: 0.4s; }
+
+      .nav-links .nav-cta {
+        animation: navFloat 5s ease-in-out infinite;
+      }
+
+      .feature-card {
+        animation: cardRise 0.9s ease both;
+      }
+
+      .feature-card:hover .feature-icon {
+        animation: ripple 1.3s ease-out infinite;
+      }
+
+      .site-header {
+        animation: fadeInDown 0.8s ease both;
+      }
+
+      @media (max-width: 820px) {
+        .hero {
+          min-height: auto;
+          grid-template-columns: 1fr;
+          gap: 10px;
+          padding: 72px 0 42px;
+        }
+
+        .hero-content {
+          max-width: 650px;
+        }
+
+        .preview-wrap {
+          min-height: 425px;
+        }
+
+        .features {
+          grid-template-columns: repeat(2, 1fr);
+        }
+
+        .steps {
+          gap: 20px;
+        }
+      }
+
+      @media (max-width: 560px) {
+        .shell {
+          width: min(100% - 36px, 1120px);
+        }
+
+        .site-header {
+          min-height: 72px;
+        }
+
+        .nav-links {
+          gap: 14px;
+          font-size: 12px;
+        }
+
+        .nav-links .nav-cta {
+          padding: 9px 12px;
+        }
+
+        .nav-links a[href="#fitur"] {
+          display: none;
+        }
+
+        .hero {
+          padding-top: 56px;
+        }
+
+        h1 {
+          font-size: clamp(42px, 12vw, 58px);
+        }
+
+        .hero-copy {
+          font-size: 15px;
+        }
+
+        .preview-wrap {
+          min-height: 385px;
+        }
+
+        .phone {
+          width: min(280px, 76%);
+        }
+
+        .map-art {
+          height: 200px;
+        }
+
+        .float-card.offline {
+          top: 45px;
+          left: -4px;
+        }
+
+        .float-card.history {
+          right: -4px;
+          bottom: 36px;
+        }
+
+        .section {
+          padding: 68px 0;
+        }
+
+        .features,
+        .steps {
+          grid-template-columns: 1fr;
+        }
+
+        .feature-card {
+          min-height: 0;
+        }
+
+        .feature-icon {
+          margin-bottom: 18px;
+        }
+
+        .download {
+          align-items: flex-start;
+          flex-direction: column;
+          padding: 28px 24px;
+        }
+
+        .site-footer {
+          align-items: flex-start;
+          flex-direction: column;
+          justify-content: center;
+          padding: 24px 0;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+
+        *,
+        *::before,
+        *::after {
+          transition-duration: 0.01ms !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="shell site-header">
+      <a class="brand" href="#" aria-label="TopoSurvey beranda">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M12 21s7-6.1 7-12a7 7 0 1 0-14 0c0 5.9 7 12 7 12Z" stroke="currentColor" stroke-width="1.8"/>
+            <circle cx="12" cy="9" r="2.4" stroke="currentColor" stroke-width="1.8"/>
+          </svg>
+        </span>
+        TopoSurvey
+      </a>
+      <nav class="nav-links" aria-label="Navigasi utama">
+        <a href="#fitur">Fitur</a>
+        <a href="Prototype/index.html">Prototype</a>
+        <a href="https://github.com/SIG-3B/Toposurvey">GitHub</a>
+        <a class="nav-cta" href="https://github.com/SIG-3B/Toposurvey/releases/latest">Unduh APK <span aria-hidden="true">↗</span></a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="shell hero" aria-labelledby="hero-title">
+        <div class="hero-content">
+          <p class="eyebrow">SURVEY WORKSPACE / OVERVIEW</p>
+          <h1 id="hero-title">Pusat kendali <span>survei lapangan.</span></h1>
+          <p class="hero-copy">
+            TopoSurvey membantu Anda mengambil koordinat GPS, mengecek elevasi,
+            melihat posisi di peta, dan menyimpan hasil survei langsung di perangkat.
+            Ini sama seperti alur yang ada di prototipe aplikasi Android.
+          </p>
+          <div class="actions">
+            <a class="button button-primary" href="Prototype/index.html">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M12 3v12m0 0 4-4m-4 4-4-4M5 17v3h14v-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              Coba Prototype
+            </a>
+            <a class="button button-secondary" href="#fitur">Lihat alur kerja <span aria-hidden="true">↓</span></a>
+          </div>
+          <p class="trust-note">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M12 3 5 6v5c0 4.5 2.8 7.7 7 10 4.2-2.3 7-5.5 7-10V6l-7-3Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+              <path d="m9 12 2 2 4-4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Data lokal · kerja offline · peta terintegrasi
+          </p>
+          <div class="hero-metrics" aria-label="Statistik produk">
+            <span>GPS & lokalisasi</span>
+            <span>Survey offline</span>
+            <span>Export cepat</span>
+          </div>
+        </div>
+
+        <div class="preview-wrap" aria-label="Ilustrasi prototipe TopoSurvey">
+          <div class="preview-glow" aria-hidden="true"></div>
+          <div class="phone">
+            <div class="phone-screen">
+              <div class="phone-top">
+                <p class="phone-title">TOPO SURVEY</p>
+                <span class="phone-menu" aria-hidden="true"><i></i><i></i><i></i></span>
+              </div>
+              <svg class="map-art" viewBox="0 0 300 225" role="img" aria-label="Ilustrasi prototipe survei peta">
+                <rect width="300" height="225" fill="#e8efe5"/>
+                <path d="M-20 39 74 9l69 28 76-36 98 37v70l-90 31-71-25-77 42-99-34Z" fill="#dce8d9"/>
+                <path d="m-20 39 94-30 69 28 76-36 98 37" fill="none" stroke="#fff" stroke-width="6"/>
+                <path d="m-15 162 95-36 77 25 70-12 91 37" fill="none" stroke="#fff" stroke-width="7"/>
+                <path d="M38-8 71 52l-17 64 43 41-8 80M171-6l-24 43 29 44-12 43 35 27-9 85M265-4l-16 51 24 46-19 57 29 52" fill="none" stroke="#f8faf7" stroke-width="5"/>
+                <path d="M-6 101c34-6 54-22 81-18s47 28 76 16 45-36 76-23 47 28 80 13" fill="none" stroke="#bfd3bc" stroke-width="2" stroke-dasharray="4 5"/>
+                <path d="M58 144c24-39 49-22 71-45s44-27 67-8 31 16 48-1" fill="none" stroke="#176b48" stroke-width="3" stroke-linecap="round" stroke-dasharray="1 7"/>
+                <circle cx="58" cy="144" r="10" fill="#176b48" fill-opacity=".12"/>
+                <circle cx="58" cy="144" r="5" fill="#176b48" stroke="#fff" stroke-width="2"/>
+                <circle cx="244" cy="90" r="8" fill="#55a576" fill-opacity=".16"/>
+                <circle cx="244" cy="90" r="3.5" fill="#55a576"/>
+                <rect x="18" y="16" width="86" height="23" rx="11.5" fill="#fff" fill-opacity=".9"/>
+                <circle cx="30" cy="27.5" r="3" fill="#55a576"/>
+                <text x="40" y="31" fill="#42634d" font-size="9" font-family="system-ui, sans-serif" font-weight="650">GPS FIX</text>
+              </svg>
+              <div class="phone-data">
+                <div class="gps-status">GPS CAPTURE · FIX BERHASIL</div>
+                <div class="reading">
+                  <div class="reading-item">
+                    <span class="reading-label">Latitude</span>
+                    <span class="reading-value">-6.9147°</span>
+                  </div>
+                  <div class="reading-item">
+                    <span class="reading-label">Longitude</span>
+                    <span class="reading-value">107.6098°</span>
+                  </div>
+                  <div class="reading-item">
+                    <span class="reading-label">Elevasi</span>
+                    <span class="reading-value">768 m</span>
+                  </div>
+                  <div class="reading-item">
+                    <span class="reading-label">Status</span>
+                    <span class="reading-value">Local save</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="float-card offline">
+            <span class="float-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M4 9a12 12 0 0 1 16 0M7 12a7.5 7.5 0 0 1 10 0m-7 3a3 3 0 0 1 4 0M12 19h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            </span>
+            <span><strong>Offline Ready</strong><small>Data tersimpan lokal</small></span>
+          </div>
+          <div class="float-card history">
+            <span class="float-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M4 5h16M4 12h16M4 19h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="19" cy="19" r="3" fill="#fff" stroke="currentColor" stroke-width="1.6"/><path d="M19 17.5V19l1 1" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+            </span>
+            <span><strong>Audit Trail</strong><small>Riwayat aktivitas</small></span>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="fitur" aria-labelledby="features-title">
+        <div class="shell">
+          <div class="section-heading">
+            <p class="eyebrow">ALUR KERJA PROTOTIPE</p>
+            <h2 id="features-title">Dari GPS hingga ekspor data, semuanya dalam satu alur.</h2>
+            <p>Fungsi utama pada prototipe TopoSurvey mengikuti tampilan aplikasi mobile: dashboard, pengambilan titik, peta, data, riwayat, ekspor, dan pengaturan.</p>
+          </div>
+          <div class="features">
+            <article class="feature-card">
+              <span class="feature-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.1 7-12a7 7 0 1 0-14 0c0 5.9 7 12 7 12Z" stroke="currentColor" stroke-width="1.7"/><circle cx="12" cy="9" r="2.3" stroke="currentColor" stroke-width="1.7"/></svg>
+              </span>
+              <h3>Ambil Koordinat</h3>
+              <p>Aktifkan lokasi perangkat, dapatkan fix GPS, lalu cek lintang, bujur, elevasi, dan akurasi horizontal.</p>
+            </article>
+            <article class="feature-card">
+              <span class="feature-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none"><path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3V6Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M9 3v15m6-12v15" stroke="currentColor" stroke-width="1.7"/></svg>
+              </span>
+              <h3>Peta Survei</h3>
+              <p>Telusuri titik di peta, fokus ke posisi terakhir, dan lihat marker titik tersimpan di projektif area kerja.</p>
+            </article>
+            <article class="feature-card">
+              <span class="feature-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none"><ellipse cx="12" cy="5" rx="8" ry="3" stroke="currentColor" stroke-width="1.7"/><path d="M4 5v7c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12v7c0 1.7 3.6 3 8 3 1.5 0 2.9-.2 4-.6" stroke="currentColor" stroke-width="1.7"/><path d="m17 18 2 2 4-5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </span>
+              <h3>Data Survei</h3>
+              <p>Semua titik disimpan ke browser/perangkat lokal, siap diurutkan, dicari, diedit, atau dihapus.</p>
+            </article>
+            <article class="feature-card">
+              <span class="feature-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none"><path d="M4 5h16M4 12h16M4 19h10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle cx="19" cy="19" r="3" fill="#fff" stroke="currentColor" stroke-width="1.6"/></svg>
+              </span>
+              <h3>Riwayat Aktivitas</h3>
+              <p>Jejak perubahan titk, ekspor, proyek, dan pengaturan tersimpan dalam audit trail lokal.</p>
+            </article>
+            <article class="feature-card">
+              <span class="feature-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 17v3h14v-3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </span>
+              <h3>Ekspor Data</h3>
+              <p>Ekspor ke CSV, GeoJSON, KML, atau cetak PDF untuk laporan survei dan kebutuhan GIS.</p>
+            </article>
+            <article class="feature-card">
+              <span class="feature-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none"><rect x="6" y="2.5" width="12" height="19" rx="2.5" stroke="currentColor" stroke-width="1.7"/><path d="M10 5h4m-2 13.5h.01" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+              </span>
+              <h3>Preferensi Aplikasi</h3>
+              <p>Atur ambang akurasi, satuan panjang, tema, peta dasar, dan mode kerja lokal/online.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section how-section" aria-labelledby="steps-title">
+        <div class="shell">
+          <div class="section-heading">
+            <p class="eyebrow">3 LANGKAH UTAMA</p>
+            <h2 id="steps-title">Alur kerja yang sama seperti prototipe.</h2>
+          </div>
+          <div class="steps">
+            <article class="step">
+              <span class="step-number" aria-hidden="true"></span>
+              <h3>Buat proyek</h3>
+              <p>Pilih proyek aktif atau buat yang baru untuk area survei lapangan tertentu.</p>
+            </article>
+            <article class="step">
+              <span class="step-number" aria-hidden="true"></span>
+              <h3>Ambil titik GPS</h3>
+              <p>Aktifkan layanan lokasi, baca koordinat, lalu cek akurasi dan elevasi sebelum menyimpan.</p>
+            </article>
+            <article class="step">
+              <span class="step-number" aria-hidden="true"></span>
+              <h3>Analisis & ekspor</h3>
+              <p>Lihat titik di peta, review data, dan ekspor ke format GIS atau laporan cetak.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="shell section" id="unduh" aria-labelledby="download-title">
+        <div class="download">
+          <div>
+            <p class="eyebrow">PROTOTYPE & APK</p>
+            <h2 id="download-title">Coba pengalaman prototipe, lalu unduh versi Android.</h2>
+            <p class="download-copy">
+              Halaman ini menampilkan alur kerja yang sama seperti prototipe TopoSurvey:
+              dashboard, capture GPS, peta, arsip, export, dan riwayat. Untuk aplikasi mobile,
+              unduh APK dari GitHub Release yang tersedia.
+            </p>
+          </div>
+          <div class="actions" style="justify-content:flex-end;">
+            <a class="button" href="Prototype/index.html">Buka Prototype</a>
+            <a class="button" href="https://github.com/SIG-3B/Toposurvey/releases/latest">Lihat APK</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="shell site-footer">
+      <p>© TopoSurvey · Survey workspace prototype</p>
+      <div class="footer-links">
+        <a class="text-link" href="Prototype/index.html">Prototype</a>
+        <a class="text-link" href="https://github.com/SIG-3B/Toposurvey">Repositori</a>
+      </div>
+    </footer>
+  </body>
+</html>

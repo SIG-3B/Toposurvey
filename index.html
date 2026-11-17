@@ -227,6 +227,25 @@
         color: var(--green);
       }
 
+      .hero-metrics {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 24px;
+      }
+
+      .hero-metrics span {
+        padding: 8px 12px;
+        border: 1px solid rgba(23, 107, 72, 0.12);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.7);
+        color: var(--green-dark);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
       .preview-wrap {
         position: relative;
         display: grid;
@@ -572,6 +591,258 @@
         text-decoration: none;
       }
 
+      .brand {
+        animation: fadeInDown 0.7s ease both;
+      }
+
+      .brand-mark {
+        animation: pulseSoft 4s ease-in-out infinite;
+      }
+
+      .nav-links a {
+        animation: fadeInUp 0.8s ease both;
+      }
+
+      .nav-links a:nth-child(1) { animation-delay: 0.05s; }
+      .nav-links a:nth-child(2) { animation-delay: 0.12s; }
+      .nav-links a:nth-child(3) { animation-delay: 0.18s; }
+      .nav-links a:nth-child(4) { animation-delay: 0.24s; }
+
+      .eyebrow,
+      .hero-content h1,
+      .hero-copy,
+      .actions,
+      .trust-note,
+      .hero-metrics {
+        animation: fadeInUp 0.9s ease both;
+      }
+
+      .hero-content h1 { animation-delay: 0.08s; }
+      .hero-copy { animation-delay: 0.16s; }
+      .actions { animation-delay: 0.22s; }
+      .trust-note { animation-delay: 0.28s; }
+      .hero-metrics { animation-delay: 0.34s; }
+
+      .button-primary { animation: buttonPulse 4s ease-in-out infinite; }
+      .button-secondary { animation: driftSway 6s ease-in-out infinite; }
+
+      .preview-glow {
+        animation: glowPulse 4.8s ease-in-out infinite;
+      }
+
+      .phone {
+        animation: floatPhone 7s ease-in-out infinite;
+      }
+
+      .phone-screen {
+        animation: tiltSoft 7s ease-in-out infinite alternate;
+      }
+
+      .float-card.offline {
+        animation: floatCardOne 5.4s ease-in-out infinite;
+      }
+
+      .float-card.history {
+        animation: floatCardTwo 6.8s ease-in-out infinite;
+      }
+
+      .feature-card:nth-child(1) { animation: cardRise 0.7s 0.05s both; }
+      .feature-card:nth-child(2) { animation: cardRise 0.7s 0.1s both; }
+      .feature-card:nth-child(3) { animation: cardRise 0.7s 0.15s both; }
+      .feature-card:nth-child(4) { animation: cardRise 0.7s 0.2s both; }
+      .feature-card:nth-child(5) { animation: cardRise 0.7s 0.25s both; }
+      .feature-card:nth-child(6) { animation: cardRise 0.7s 0.3s both; }
+
+      .step:nth-child(1) { animation: slideInLeft 0.8s ease both; }
+      .step:nth-child(2) { animation: slideInUp 0.8s ease both; }
+      .step:nth-child(3) { animation: slideInRight 0.8s ease both; }
+
+      .download {
+        animation: zoomInCard 0.9s ease both;
+      }
+
+      .site-footer {
+        animation: fadeInUp 0.9s ease both;
+      }
+
+      @keyframes fadeInDown {
+        from {
+          opacity: 0;
+          transform: translateY(-18px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(18px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes pulseSoft {
+        0%, 100% { transform: scale(1); box-shadow: 0 12px 28px rgba(23, 107, 72, 0.2); }
+        50% { transform: scale(1.05); box-shadow: 0 18px 32px rgba(23, 107, 72, 0.28); }
+      }
+
+      @keyframes buttonPulse {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-2px) scale(1.01); }
+      }
+
+      @keyframes driftSway {
+        0%, 100% { transform: rotate(0deg) translateX(0); }
+        50% { transform: rotate(-1.5deg) translateX(2px); }
+      }
+
+      @keyframes glowPulse {
+        0%, 100% { transform: scale(0.96); opacity: 0.7; }
+        50% { transform: scale(1.08); opacity: 1; }
+      }
+
+      @keyframes floatPhone {
+        0%, 100% { transform: translateY(0) rotate(2deg); }
+        50% { transform: translateY(-12px) rotate(1deg); }
+      }
+
+      @keyframes tiltSoft {
+        0% { transform: perspective(1000px) rotateX(0deg) rotateY(0deg); }
+        100% { transform: perspective(1000px) rotateX(2deg) rotateY(-2deg); }
+      }
+
+      @keyframes floatCardOne {
+        0%, 100% { transform: translateY(0) translateX(0); }
+        50% { transform: translateY(-10px) translateX(6px); }
+      }
+
+      @keyframes floatCardTwo {
+        0%, 100% { transform: translateY(0) translateX(0); }
+        50% { transform: translateY(-14px) translateX(-6px); }
+      }
+
+      @keyframes cardRise {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes slideInLeft {
+        from { opacity: 0; transform: translateX(-22px); }
+        to { opacity: 1; transform: translateX(0); }
+      }
+
+      @keyframes slideInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      @keyframes slideInRight {
+        from { opacity: 0; transform: translateX(22px); }
+        to { opacity: 1; transform: translateX(0); }
+      }
+
+      @keyframes zoomInCard {
+        from {
+          opacity: 0;
+          transform: scale(0.97);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+
+      @keyframes floatingBadge {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-8px); }
+      }
+
+      @keyframes orbitGlow {
+        0%, 100% { opacity: 0.5; transform: scale(1); }
+        50% { opacity: 1; transform: scale(1.08); }
+      }
+
+      @keyframes shimmer {
+        0% { background-position: -200% 0; }
+        100% { background-position: 200% 0; }
+      }
+
+      @keyframes spinSlow {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+
+      @keyframes breathe {
+        0%, 100% { transform: scale(1); opacity: 0.92; }
+        50% { transform: scale(1.04); opacity: 1; }
+      }
+
+      @keyframes ripple {
+        0% { box-shadow: 0 0 0 0 rgba(23, 107, 72, 0.25); }
+        70% { box-shadow: 0 0 0 18px rgba(23, 107, 72, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(23, 107, 72, 0); }
+      }
+
+      @keyframes pulseHalo {
+        0%, 100% { transform: scale(1); opacity: 0.5; }
+        50% { transform: scale(1.12); opacity: 1; }
+      }
+
+      @keyframes badgePop {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.08); }
+      }
+
+      @keyframes navFloat {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-2px); }
+      }
+
+      @keyframes mapScan {
+        0% { background-position: 0% 50%; }
+        100% { background-position: 100% 50%; }
+      }
+
+      @keyframes stepHighlight {
+        0%, 100% { box-shadow: 0 0 0 rgba(23, 107, 72, 0); }
+        50% { box-shadow: 0 0 0 6px rgba(23, 107, 72, 0.08); }
+      }
+
+      .hero-metrics span {
+        animation: badgePop 3.2s ease-in-out infinite;
+      }
+
+      .hero-metrics span:nth-child(2) { animation-delay: 0.2s; }
+      .hero-metrics span:nth-child(3) { animation-delay: 0.4s; }
+
+      .nav-links .nav-cta {
+        animation: navFloat 5s ease-in-out infinite;
+      }
+
+      .feature-card {
+        animation: cardRise 0.9s ease both;
+      }
+
+      .feature-card:hover .feature-icon {
+        animation: ripple 1.3s ease-out infinite;
+      }
+
+      .site-header {
+        animation: fadeInDown 0.8s ease both;
+      }
+
       @media (max-width: 820px) {
         .hero {
           min-height: auto;
@@ -710,6 +981,7 @@
       </a>
       <nav class="nav-links" aria-label="Navigasi utama">
         <a href="#fitur">Fitur</a>
+        <a href="Prototype/index.html">Prototype</a>
         <a href="https://github.com/SIG-3B/Toposurvey">GitHub</a>
         <a class="nav-cta" href="https://github.com/SIG-3B/Toposurvey/releases/latest">Unduh APK <span aria-hidden="true">↗</span></a>
       </nav>
@@ -718,39 +990,45 @@
     <main>
       <section class="shell hero" aria-labelledby="hero-title">
         <div class="hero-content">
-          <p class="eyebrow">Survei lapangan, lebih sederhana</p>
-          <h1 id="hero-title">Kenali setiap titik <span>di lapangan.</span></h1>
+          <p class="eyebrow">SURVEY WORKSPACE / OVERVIEW</p>
+          <h1 id="hero-title">Pusat kendali <span>survei lapangan.</span></h1>
           <p class="hero-copy">
-            Catat koordinat dan elevasi, lihat posisi di peta, lalu simpan hasil
-            survei langsung di ponsel. Praktis digunakan dengan data yang tersimpan lokal.
+            TopoSurvey membantu Anda mengambil koordinat GPS, mengecek elevasi,
+            melihat posisi di peta, dan menyimpan hasil survei langsung di perangkat.
+            Ini sama seperti alur yang ada di prototipe aplikasi Android.
           </p>
           <div class="actions">
-            <a class="button button-primary" href="https://github.com/SIG-3B/Toposurvey/releases/latest">
+            <a class="button button-primary" href="Prototype/index.html">
               <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <path d="M12 3v12m0 0 4-4m-4 4-4-4M5 17v3h14v-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
-              Unduh aplikasi Android
+              Coba Prototype
             </a>
-            <a class="button button-secondary" href="#fitur">Jelajahi fitur <span aria-hidden="true">↓</span></a>
+            <a class="button button-secondary" href="#fitur">Lihat alur kerja <span aria-hidden="true">↓</span></a>
           </div>
           <p class="trust-note">
             <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <path d="M12 3 5 6v5c0 4.5 2.8 7.7 7 10 4.2-2.3 7-5.5 7-10V6l-7-3Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
               <path d="m9 12 2 2 4-4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
-            Data tersimpan offline · Peta memerlukan internet
+            Data lokal · kerja offline · peta terintegrasi
           </p>
+          <div class="hero-metrics" aria-label="Statistik produk">
+            <span>GPS & lokalisasi</span>
+            <span>Survey offline</span>
+            <span>Export cepat</span>
+          </div>
         </div>
 
-        <div class="preview-wrap" aria-label="Ilustrasi tampilan aplikasi TopoSurvey">
+        <div class="preview-wrap" aria-label="Ilustrasi prototipe TopoSurvey">
           <div class="preview-glow" aria-hidden="true"></div>
           <div class="phone">
             <div class="phone-screen">
               <div class="phone-top">
-                <p class="phone-title">TopoSurvey</p>
+                <p class="phone-title">TOPO SURVEY</p>
                 <span class="phone-menu" aria-hidden="true"><i></i><i></i><i></i></span>
               </div>
-              <svg class="map-art" viewBox="0 0 300 225" role="img" aria-label="Ilustrasi peta dengan titik lokasi survei">
+              <svg class="map-art" viewBox="0 0 300 225" role="img" aria-label="Ilustrasi prototipe survei peta">
                 <rect width="300" height="225" fill="#e8efe5"/>
                 <path d="M-20 39 74 9l69 28 76-36 98 37v70l-90 31-71-25-77 42-99-34Z" fill="#dce8d9"/>
                 <path d="m-20 39 94-30 69 28 76-36 98 37" fill="none" stroke="#fff" stroke-width="6"/>
@@ -762,19 +1040,19 @@
                 <circle cx="58" cy="144" r="5" fill="#176b48" stroke="#fff" stroke-width="2"/>
                 <circle cx="244" cy="90" r="8" fill="#55a576" fill-opacity=".16"/>
                 <circle cx="244" cy="90" r="3.5" fill="#55a576"/>
-                <rect x="17" y="15" width="72" height="23" rx="11.5" fill="#fff" fill-opacity=".9"/>
-                <circle cx="29" cy="26.5" r="3" fill="#55a576"/>
-                <text x="38" y="30" fill="#42634d" font-size="9" font-family="system-ui, sans-serif" font-weight="650">Posisi aktif</text>
+                <rect x="18" y="16" width="86" height="23" rx="11.5" fill="#fff" fill-opacity=".9"/>
+                <circle cx="30" cy="27.5" r="3" fill="#55a576"/>
+                <text x="40" y="31" fill="#42634d" font-size="9" font-family="system-ui, sans-serif" font-weight="650">GPS FIX</text>
               </svg>
               <div class="phone-data">
-                <div class="gps-status">CONTOH PEMBACAAN · GPS AKTIF</div>
+                <div class="gps-status">GPS CAPTURE · FIX BERHASIL</div>
                 <div class="reading">
                   <div class="reading-item">
-                    <span class="reading-label">Lintang</span>
+                    <span class="reading-label">Latitude</span>
                     <span class="reading-value">-6.9147°</span>
                   </div>
                   <div class="reading-item">
-                    <span class="reading-label">Bujur</span>
+                    <span class="reading-label">Longitude</span>
                     <span class="reading-value">107.6098°</span>
                   </div>
                   <div class="reading-item">
@@ -782,8 +1060,8 @@
                     <span class="reading-value">768 m</span>
                   </div>
                   <div class="reading-item">
-                    <span class="reading-label">Penyimpanan</span>
-                    <span class="reading-value">Di perangkat</span>
+                    <span class="reading-label">Status</span>
+                    <span class="reading-value">Local save</span>
                   </div>
                 </div>
               </div>
@@ -793,13 +1071,13 @@
             <span class="float-icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" fill="none"><path d="M4 9a12 12 0 0 1 16 0M7 12a7.5 7.5 0 0 1 10 0m-7 3a3 3 0 0 1 4 0M12 19h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
             </span>
-            <span><strong>Siap offline</strong><small>Survei tetap tersimpan</small></span>
+            <span><strong>Offline Ready</strong><small>Data tersimpan lokal</small></span>
           </div>
           <div class="float-card history">
             <span class="float-icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" fill="none"><path d="M4 5h16M4 12h16M4 19h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="19" cy="19" r="3" fill="#fff" stroke="currentColor" stroke-width="1.6"/><path d="M19 17.5V19l1 1" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
             </span>
-            <span><strong>Riwayat rapi</strong><small>Temukan titik tersimpan</small></span>
+            <span><strong>Audit Trail</strong><small>Riwayat aktivitas</small></span>
           </div>
         </div>
       </section>
@@ -807,52 +1085,52 @@
       <section class="section" id="fitur" aria-labelledby="features-title">
         <div class="shell">
           <div class="section-heading">
-            <p class="eyebrow">Semua yang dibutuhkan</p>
-            <h2 id="features-title">Dari pengukuran hingga data siap dibagikan.</h2>
-            <p>Alur survei yang jelas membantu Anda fokus di lapangan, bukan pada aplikasi.</p>
+            <p class="eyebrow">ALUR KERJA PROTOTIPE</p>
+            <h2 id="features-title">Dari GPS hingga ekspor data, semuanya dalam satu alur.</h2>
+            <p>Fungsi utama pada prototipe TopoSurvey mengikuti tampilan aplikasi mobile: dashboard, pengambilan titik, peta, data, riwayat, ekspor, dan pengaturan.</p>
           </div>
           <div class="features">
             <article class="feature-card">
               <span class="feature-icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.1 7-12a7 7 0 1 0-14 0c0 5.9 7 12 7 12Z" stroke="currentColor" stroke-width="1.7"/><circle cx="12" cy="9" r="2.3" stroke="currentColor" stroke-width="1.7"/></svg>
               </span>
-              <h3>Koordinat & elevasi</h3>
-              <p>Pantau lintang, bujur, elevasi, dan perkiraan akurasi dari GPS ponsel.</p>
+              <h3>Ambil Koordinat</h3>
+              <p>Aktifkan lokasi perangkat, dapatkan fix GPS, lalu cek lintang, bujur, elevasi, dan akurasi horizontal.</p>
             </article>
             <article class="feature-card">
               <span class="feature-icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24" fill="none"><path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3V6Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M9 3v15m6-12v15" stroke="currentColor" stroke-width="1.7"/></svg>
               </span>
-              <h3>Peta interaktif</h3>
-              <p>Lihat posisi dan titik survei tersimpan di peta OpenStreetMap.</p>
+              <h3>Peta Survei</h3>
+              <p>Telusuri titik di peta, fokus ke posisi terakhir, dan lihat marker titik tersimpan di projektif area kerja.</p>
             </article>
             <article class="feature-card">
               <span class="feature-icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24" fill="none"><ellipse cx="12" cy="5" rx="8" ry="3" stroke="currentColor" stroke-width="1.7"/><path d="M4 5v7c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12v7c0 1.7 3.6 3 8 3 1.5 0 2.9-.2 4-.6" stroke="currentColor" stroke-width="1.7"/><path d="m17 18 2 2 4-5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
               </span>
-              <h3>Simpan secara lokal</h3>
-              <p>Data tersimpan di SQLite pada perangkat dan tetap tersedia tanpa koneksi internet.</p>
+              <h3>Data Survei</h3>
+              <p>Semua titik disimpan ke browser/perangkat lokal, siap diurutkan, dicari, diedit, atau dihapus.</p>
             </article>
             <article class="feature-card">
               <span class="feature-icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24" fill="none"><path d="M4 5h16M4 12h16M4 19h10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle cx="19" cy="19" r="3" fill="#fff" stroke="currentColor" stroke-width="1.6"/></svg>
               </span>
-              <h3>Riwayat terorganisir</h3>
-              <p>Buka kembali detail survei, kelola titik, dan lihat hasil pada peta.</p>
+              <h3>Riwayat Aktivitas</h3>
+              <p>Jejak perubahan titk, ekspor, proyek, dan pengaturan tersimpan dalam audit trail lokal.</p>
             </article>
             <article class="feature-card">
               <span class="feature-icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 17v3h14v-3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
               </span>
-              <h3>Ekspor GeoJSON</h3>
-              <p>Ekspor kumpulan titik sebagai GeoJSON untuk disimpan atau dibagikan.</p>
+              <h3>Ekspor Data</h3>
+              <p>Ekspor ke CSV, GeoJSON, KML, atau cetak PDF untuk laporan survei dan kebutuhan GIS.</p>
             </article>
             <article class="feature-card">
               <span class="feature-icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24" fill="none"><rect x="6" y="2.5" width="12" height="19" rx="2.5" stroke="currentColor" stroke-width="1.7"/><path d="M10 5h4m-2 13.5h.01" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
               </span>
-              <h3>Dibuat untuk Android</h3>
-              <p>Antarmuka Material 3 yang ringkas dan mudah digunakan di lapangan.</p>
+              <h3>Preferensi Aplikasi</h3>
+              <p>Atur ambang akurasi, satuan panjang, tema, peta dasar, dan mode kerja lokal/online.</p>
             </article>
           </div>
         </div>
@@ -861,24 +1139,24 @@
       <section class="section how-section" aria-labelledby="steps-title">
         <div class="shell">
           <div class="section-heading">
-            <p class="eyebrow">Mulai dalam tiga langkah</p>
-            <h2 id="steps-title">Sederhana sejak pertama dibuka.</h2>
+            <p class="eyebrow">3 LANGKAH UTAMA</p>
+            <h2 id="steps-title">Alur kerja yang sama seperti prototipe.</h2>
           </div>
           <div class="steps">
             <article class="step">
               <span class="step-number" aria-hidden="true"></span>
-              <h3>Aktifkan lokasi</h3>
-              <p>Beri izin lokasi dan aktifkan GPS agar aplikasi dapat membaca posisi Anda.</p>
+              <h3>Buat proyek</h3>
+              <p>Pilih proyek aktif atau buat yang baru untuk area survei lapangan tertentu.</p>
             </article>
             <article class="step">
               <span class="step-number" aria-hidden="true"></span>
-              <h3>Periksa pembacaan</h3>
-              <p>Lihat koordinat dan elevasi, lalu tunggu hingga posisi cukup akurat.</p>
+              <h3>Ambil titik GPS</h3>
+              <p>Aktifkan layanan lokasi, baca koordinat, lalu cek akurasi dan elevasi sebelum menyimpan.</p>
             </article>
             <article class="step">
               <span class="step-number" aria-hidden="true"></span>
-              <h3>Simpan & ekspor</h3>
-              <p>Simpan titik di perangkat dan ekspor riwayat ke GeoJSON bila diperlukan.</p>
+              <h3>Analisis & ekspor</h3>
+              <p>Lihat titik di peta, review data, dan ekspor ke format GIS atau laporan cetak.</p>
             </article>
           </div>
         </div>
@@ -887,25 +1165,27 @@
       <section class="shell section" id="unduh" aria-labelledby="download-title">
         <div class="download">
           <div>
-            <p class="eyebrow">Bawa survei ke lapangan</p>
-            <h2 id="download-title">Siap mencatat titik berikutnya?</h2>
+            <p class="eyebrow">PROTOTYPE & APK</p>
+            <h2 id="download-title">Coba pengalaman prototipe, lalu unduh versi Android.</h2>
             <p class="download-copy">
-              Unduh APK Android dari GitHub Releases. Pembacaan lokasi bergantung
-              pada GPS dan kondisi perangkat; elevasi bukan pengganti alat survei geodetik.
+              Halaman ini menampilkan alur kerja yang sama seperti prototipe TopoSurvey:
+              dashboard, capture GPS, peta, arsip, export, dan riwayat. Untuk aplikasi mobile,
+              unduh APK dari GitHub Release yang tersedia.
             </p>
           </div>
-          <a class="button" href="https://github.com/SIG-3B/Toposurvey/releases/latest">
-            Lihat rilis terbaru <span aria-hidden="true">↗</span>
-          </a>
+          <div class="actions" style="justify-content:flex-end;">
+            <a class="button" href="Prototype/index.html">Buka Prototype</a>
+            <a class="button" href="https://github.com/SIG-3B/Toposurvey/releases/latest">Lihat APK</a>
+          </div>
         </div>
       </section>
     </main>
 
     <footer class="shell site-footer">
-      <p>© TopoSurvey · Aplikasi survei lapangan untuk Android</p>
+      <p>© TopoSurvey · Survey workspace prototype</p>
       <div class="footer-links">
+        <a class="text-link" href="Prototype/index.html">Prototype</a>
         <a class="text-link" href="https://github.com/SIG-3B/Toposurvey">Repositori</a>
-        <a class="text-link" href="https://www.openstreetmap.org/copyright">© OpenStreetMap</a>
       </div>
     </footer>
   </body>

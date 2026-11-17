@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0B141D" />
+  <meta name="description" content="TopoSurvey Mobile — prototipe aplikasi Android untuk pengambilan koordinat GPS, elevasi, pencatatan titik survei dan peta." />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="icon" href="./icons/icon-192.png" type="image/png" />
+  <link rel="stylesheet" href="./styles.css" />
+  <title>TopoSurvey — Survei Topografi Android</title>
+</head>
+<body data-theme="dark">
+  <div class="app-shell" id="appShell">
+    <aside class="sidebar" id="sidebar" aria-label="Navigasi utama">
+      <div class="brand-sidebar"><div class="brand-icon"><svg viewBox="0 0 36 36" fill="none"><path d="M5 25 14 8l8 11 5-7 5 13H5Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="19" cy="13" r="2" fill="currentColor"/></svg></div><div><strong>TOPO<span>SURVEY</span></strong><small>FIELD INTELLIGENCE</small></div></div>
+      <div class="sidebar-section-title">WORKSPACE</div>
+      <nav id="desktopNav" class="desktop-nav" aria-label="Menu desktop"></nav>
+      <div class="sidebar-bottom"><div class="sidebar-online" id="connectionSidebar"><span class="online-led"></span> <span>Status browser</span></div><div class="sidebar-version">PROTOTYPE / 1.0.0</div></div>
+    </aside>
+    <div class="workspace">
+      <header class="topbar">
+        <div class="topbar-leading"><button class="icon-button mobile-menu" data-action="open-drawer" aria-label="Buka seluruh menu"><span id="menuIcon">☰</span></button><div class="topbar-eyebrow">SURVEY WORKSPACE <span class="topbar-sep">/</span> <span id="pageCrumb">OVERVIEW</span></div></div>
+        <div class="topbar-actions"><span class="status-pill" id="networkPill">OFFLINE READY</span><button class="round-button" data-action="show-help" aria-label="Panduan aplikasi">?</button><button class="avatar-button" data-action="navigate" data-page="settings" aria-label="Pengaturan">TS</button></div>
+      </header>
+      <main class="content" id="screen" tabindex="-1" aria-live="polite"></main>
+    </div>
+    <nav id="mobileNav" class="mobile-bottom-nav" aria-label="Navigasi bawah"></nav>
+  </div>
+  <div id="drawer" class="drawer-root" hidden></div>
+  <div id="modal" class="modal-root" hidden></div>
+  <div id="toast" role="status" aria-live="polite" class="toast"></div>
+  <section id="printArea" aria-label="Laporan untuk dicetak"></section>
+  <script src="./app.js" defer></script>
+</body>
+</html>
