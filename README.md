@@ -17,6 +17,19 @@ APK siap pasang dapat diunduh langsung melalui halaman rilis GitHub berikut:
 - **Unduh Langsung APK:** [TopoSurvey-v1.1.0.apk](https://github.com/SIG-3B/Toposurvey/releases/download/v1.1.0/TopoSurvey-v1.1.0.apk)
 - **Semua Rilis Terbaru:** [GitHub Releases](https://github.com/SIG-3B/Toposurvey/releases)
 
+## Landing Page & Otomatisasi GitHub
+
+- **Landing page:** [TopoSurvey di GitHub Pages](https://sig-3b.github.io/Toposurvey/)
+- Sumber halaman statis ada di `docs/index.html` dan di-deploy oleh
+  `.github/workflows/pages.yml` setiap ada perubahan di branch `main`.
+- Untuk deployment pertama, buka **Settings → Pages**, lalu pilih **GitHub
+  Actions** sebagai sumber build. Workflow juga dapat dijalankan manual dari tab
+  **Actions**.
+- `.github/workflows/release.yml` menjalankan analisis dan tes Flutter, membuat
+  tag versi otomatis, membangun APK release, lalu menerbitkan GitHub Release
+  saat ada push ke `main`. Jalankan manual dari tab **Actions** untuk memilih
+  jenis kenaikan versi.
+
 ---
 
 - `frontend/` berisi aplikasi Flutter dan Dart dengan Material 3, Geolocator,
@@ -26,7 +39,7 @@ APK siap pasang dapat diunduh langsung melalui halaman rilis GitHub berikut:
 - `backend/` berisi REST API FastAPI untuk Python dan database SQLite lokal
   (`backend/toposurvey.sqlite3`) yang tetap tersedia untuk pengujian REST API.
 
-Siapkan Flutter 3.47.4 (Dart 3.13.3), Android SDK dan emulator atau perangkat
+Siapkan Flutter 3.47.5 (Dart 3.13.3), Android SDK dan emulator atau perangkat
 Android, serta Python 3.11 atau lebih baru (opsional untuk menjalankan `backend/`).
 Periksa instalasi Android dengan `flutter doctor -v`.
 
