@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:latlong2/latlong.dart';
 
 import 'models/survey.dart';
-import 'screens/history_screen.dart';
+import 'screens/history_hub_screen.dart';
 import 'screens/home_screen.dart';
+import 'screens/map_screen.dart';
+import 'screens/data_survey_screen.dart';
 import 'screens/survey_screen.dart';
 import 'services/api_service.dart';
 import 'services/local_database_service.dart';
@@ -19,6 +22,7 @@ class TopoSurveyApp extends StatelessWidget {
     this.loadSurvey,
     this.saveSurvey,
     this.deleteSurvey,
+    this.database,
   });
 
   factory TopoSurveyApp.local({
@@ -32,6 +36,7 @@ class TopoSurveyApp extends StatelessWidget {
       loadSurvey: storage.loadSurvey,
       saveSurvey: storage.saveSurvey,
       deleteSurvey: storage.deleteSurvey,
+      database: storage,
     );
   }
 
@@ -53,6 +58,7 @@ class TopoSurveyApp extends StatelessWidget {
   final Future<Survey> Function(int)? loadSurvey;
   final Future<Survey> Function(SurveyMeasurement)? saveSurvey;
   final Future<void> Function(int)? deleteSurvey;
+  final LocalDatabaseService? database;
 
   @override
   Widget build(BuildContext context) {
@@ -130,6 +136,7 @@ class TopoSurveyApp extends StatelessWidget {
         loadSurvey: loadSurvey,
         saveSurvey: saveSurvey,
         deleteSurvey: deleteSurvey,
+        database: database,
       ),
     );
   }
@@ -143,6 +150,7 @@ class _SurveyTabs extends StatefulWidget {
     required this.loadSurvey,
     required this.saveSurvey,
     required this.deleteSurvey,
+    required this.database,
   });
 
   final LocationService location;
@@ -151,6 +159,7 @@ class _SurveyTabs extends StatefulWidget {
   final Future<Survey> Function(int)? loadSurvey;
   final Future<Survey> Function(SurveyMeasurement)? saveSurvey;
   final Future<void> Function(int)? deleteSurvey;
+  final LocalDatabaseService? database;
 
   @override
   State<_SurveyTabs> createState() => _SurveyTabsState();
@@ -160,6 +169,8 @@ class _SurveyTabsState extends State<_SurveyTabs> {
   int _selected = 0;
   Future<List<Survey>>? _history;
   bool _saving = false;
+  LatLng? _lastGps;
+  double? _lastGpsAccuracy;
 
   @override
   void initState() {
@@ -207,7 +218,13 @@ class _SurveyTabsState extends State<_SurveyTabs> {
 
   @override
   Widget build(BuildContext context) {
-    const titles = ['TopoSurvey', 'Survei', 'Riwayat'];
+    const titles = [
+      'TopoSurvey',
+      'Ambil Koordinat',
+      'Peta Survei',
+      'Data Survei',
+      'Riwayat Aktivitas',
+    ];
     return PopScope(
       canPop: _selected == 0,
       onPopInvokedWithResult: (didPop, _) {
@@ -233,7 +250,7 @@ class _SurveyTabsState extends State<_SurveyTabs> {
                         ? snapshot.data?.length
                         : null,
                     onStart: () => _select(1),
-                    onHistory: () => _select(2),
+                    onHistory: () => _select(4),
                     onReload: _reload,
                     historyUnavailable: snapshot.hasError,
                     historyLoading:
@@ -245,9 +262,35 @@ class _SurveyTabsState extends State<_SurveyTabs> {
                     isSaving: _saving,
                     storageUnavailable: snapshot.hasError,
                     onSave: widget.saveSurvey == null ? null : _save,
+                    database: widget.database,
+                    onPositionChanged: (position) {
+                      _lastGps = LatLng(position.latitude, position.longitude);
+                      _lastGpsAccuracy = position.hasAccuracy
+                          ? position.accuracy
+                          : null;
+                    },
                   ),
-                  _ => HistoryScreen(
+                  2 => _surveyDataState(
+                    snapshot,
+                    MapScreen(
+                      surveys: snapshot.data ?? const [],
+                      database: widget.database,
+                      userLocation: _lastGps,
+                      accuracyMeters: _lastGpsAccuracy,
+                    ),
+                  ),
+                  3 => _surveyDataState(
+                    snapshot,
+                    DataSurveyScreen(
+                      surveys: snapshot.data ?? const [],
+                      database: widget.database,
+                      onReload: _reload,
+                      onAdd: () => _select(1),
+                    ),
+                  ),
+                  _ => HistoryHubScreen(
                     snapshot: snapshot,
+                    database: widget.database,
                     onStart: () => _select(1),
                     onReload: _reload,
                     loadDetail: widget.loadSurvey,
@@ -270,12 +313,41 @@ class _SurveyTabsState extends State<_SurveyTabs> {
             NavigationDestination(
               icon: Icon(Icons.my_location_outlined),
               selectedIcon: Icon(Icons.my_location),
-              label: 'Survei',
+              label: 'Ambil',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.map_outlined),
+              label: 'Peta',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.storage_outlined),
+              label: 'Data',
             ),
             NavigationDestination(icon: Icon(Icons.history), label: 'Riwayat'),
           ],
         ),
       ),
     );
+  }
+
+  Widget _surveyDataState(
+    AsyncSnapshot<List<Survey>> snapshot,
+    Widget content,
+  ) {
+    if (snapshot.connectionState == ConnectionState.waiting) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    if (snapshot.hasError) {
+      return Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('Data survei tidak dapat dimuat.'),
+            TextButton(onPressed: _reload, child: const Text('Coba lagi')),
+          ],
+        ),
+      );
+    }
+    return content;
   }
 }

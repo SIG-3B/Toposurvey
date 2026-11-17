@@ -12,12 +12,18 @@ class SurveyMap extends StatefulWidget {
     this.accuracyMeters,
     this.savedSurveys = const [],
     this.createTileProvider,
+    this.onSurveyTap,
+    this.expand = false,
+    this.focusSurvey,
   });
 
   final LatLng? userLocation;
   final double? accuracyMeters;
   final List<Survey> savedSurveys;
   final TileProvider Function()? createTileProvider;
+  final ValueChanged<Survey>? onSurveyTap;
+  final bool expand;
+  final Survey? focusSurvey;
 
   @override
   State<SurveyMap> createState() => _SurveyMapState();
@@ -39,11 +45,23 @@ class _SurveyMapState extends State<SurveyMap> {
   void initState() {
     super.initState();
     _centeredOnFix = widget.userLocation != null;
+    if (widget.userLocation == null && widget.savedSurveys.isNotEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _showAll();
+      });
+    }
   }
 
   @override
   void didUpdateWidget(covariant SurveyMap oldWidget) {
     super.didUpdateWidget(oldWidget);
+    if (widget.focusSurvey != null &&
+        widget.focusSurvey != oldWidget.focusSurvey) {
+      final p = widget.focusSurvey!.measurement;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _controller.move(LatLng(p.latitude, p.longitude), 17);
+      });
+    }
     if (_centeredOnFix || widget.userLocation == null) return;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final fix = widget.userLocation;
@@ -89,6 +107,24 @@ class _SurveyMapState extends State<SurveyMap> {
     _controller.move(camera.center, zoom);
   }
 
+  void _showAll() {
+    final points = widget.savedSurveys;
+    if (points.isEmpty) return;
+    if (points.length == 1) {
+      final p = points.first.measurement;
+      _controller.move(LatLng(p.latitude, p.longitude), 16);
+      return;
+    }
+    final bounds = LatLngBounds.fromPoints(
+      points
+          .map((s) => LatLng(s.measurement.latitude, s.measurement.longitude))
+          .toList(),
+    );
+    _controller.fitCamera(
+      CameraFit.bounds(bounds: bounds, padding: const EdgeInsets.all(48)),
+    );
+  }
+
   Future<void> _openAttribution() async {
     final url = Uri.https('www.openstreetmap.org', '/copyright');
     try {
@@ -118,11 +154,14 @@ class _SurveyMapState extends State<SurveyMap> {
       return Marker(
         point: LatLng(data.latitude, data.longitude),
         alignment: Alignment.topCenter,
-        child: Icon(
-          Icons.location_on,
-          size: 32,
-          color: colors.primary,
-          semanticLabel: 'Titik survei #${survey.id}',
+        child: GestureDetector(
+          onTap: () => widget.onSurveyTap?.call(survey),
+          child: Icon(
+            Icons.location_on,
+            size: 32,
+            color: colors.primary,
+            semanticLabel: 'Titik survei ${survey.pointCode}',
+          ),
         ),
       );
     });
@@ -133,7 +172,7 @@ class _SurveyMapState extends State<SurveyMap> {
         ClipRRect(
           borderRadius: BorderRadius.circular(12),
           child: SizedBox(
-            height: 248,
+            height: widget.expand ? 360 : 248,
             child: Stack(
               fit: StackFit.expand,
               children: [
@@ -239,6 +278,13 @@ class _SurveyMapState extends State<SurveyMap> {
                                   _controller.camera.zoom,
                                 ),
                           icon: const Icon(Icons.my_location),
+                        ),
+                        IconButton(
+                          tooltip: 'Tampilkan seluruh titik survei',
+                          onPressed: widget.savedSurveys.isEmpty
+                              ? null
+                              : _showAll,
+                          icon: const Icon(Icons.fit_screen_outlined),
                         ),
                       ],
                     ),

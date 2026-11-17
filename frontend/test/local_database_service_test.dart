@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -51,6 +52,99 @@ Matcher _apiError(String message) => isA<ApiException>().having(
 );
 
 void main() {
+  test(
+    'legacy SQLite rows survive metadata migration and activity persists',
+    () async {
+      final raw = sqlite3.openInMemory();
+      raw.execute(
+        'CREATE TABLE surveys (id INTEGER PRIMARY KEY AUTOINCREMENT, latitude REAL NOT NULL, longitude REAL NOT NULL, elevation REAL NOT NULL, created_at TEXT NOT NULL)',
+      );
+      raw.execute(
+        "INSERT INTO surveys (latitude, longitude, elevation, created_at) VALUES (-6.9, 107.6, 12, '2026-11-16T03:00:00.000Z')",
+      );
+      final db = LocalDatabaseService(openDatabase: () async => raw);
+      addTearDown(db.close);
+
+      final migrated = await db.loadSurvey(1);
+      expect(migrated.measurement.latitude, -6.9);
+      expect(migrated.pointCode, 'TP-1');
+      expect(migrated.projectId, 1);
+      await db.updateSurveyMetadata(
+        1,
+        pointCode: 'TP-A',
+        pointName: 'Benchmark',
+        notes: 'Catatan',
+      );
+      expect((await db.loadSurvey(1)).notes, 'Catatan');
+      final activities = await db.loadActivityLogs();
+      expect(activities.map((a) => a.action), ['EDIT']);
+      expect(activities.single.surveyId, 1);
+    },
+  );
+
+  test(
+    'activity log remains available after reopening the SQLite file',
+    () async {
+      final directory = await Directory.systemTemp.createTemp(
+        'toposurvey-test-',
+      );
+      addTearDown(() => directory.delete(recursive: true));
+      final path = '${directory.path}${Platform.pathSeparator}surveys.sqlite3';
+      var db = LocalDatabaseService(
+        openDatabase: () async => sqlite3.open(path),
+      );
+      await db.saveSurvey(
+        SurveyMeasurement(
+          latitude: 0,
+          longitude: 0,
+          elevation: 1,
+          pointCode: 'TP-01',
+          pointName: 'Kontrol',
+        ),
+      );
+      db.close();
+
+      db = LocalDatabaseService(openDatabase: () async => sqlite3.open(path));
+      addTearDown(db.close);
+      final logs = await db.loadActivityLogs();
+      expect(logs.single.action, 'CREATE');
+      expect(logs.single.surveyId, 1);
+      expect((await db.loadSurvey(1)).pointName, 'Kontrol');
+    },
+  );
+
+  test(
+    'project changes are logged and projects with surveys are protected',
+    () async {
+      final db = LocalDatabaseService(
+        openDatabase: () async => sqlite3.openInMemory(),
+      );
+      addTearDown(db.close);
+      final projectId = await db.saveProject('Pekerjaan A');
+      await db.saveProject('Pekerjaan B', id: projectId);
+      await db.saveSurvey(
+        SurveyMeasurement(
+          latitude: 0,
+          longitude: 0,
+          elevation: 1,
+          projectId: projectId,
+        ),
+      );
+      await expectLater(
+        db.deleteProject(projectId),
+        throwsA(_apiError('masih memiliki titik')),
+      );
+      final emptyProject = await db.saveProject('Kosong');
+      await db.deleteProject(emptyProject);
+      expect(
+        (await db.loadActivityLogs())
+            .where((a) => a.action == 'PROJECT')
+            .length,
+        4,
+      );
+    },
+  );
+
   test('LocalDatabaseService supports full offline CRUD lifecycle', () async {
     final db = LocalDatabaseService(
       openDatabase: () async => sqlite3.openInMemory(),
@@ -75,10 +169,18 @@ void main() {
     }
 
     final first = await db.saveSurvey(
-      const SurveyMeasurement(latitude: -6.9, longitude: 107.6, elevation: -4.5),
+      const SurveyMeasurement(
+        latitude: -6.9,
+        longitude: 107.6,
+        elevation: -4.5,
+      ),
     );
     final second = await db.saveSurvey(
-      const SurveyMeasurement(latitude: -6.91, longitude: 107.61, elevation: 12),
+      const SurveyMeasurement(
+        latitude: -6.91,
+        longitude: 107.61,
+        elevation: 12,
+      ),
     );
 
     expect(first.id, 1);
@@ -159,6 +261,8 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
+    await tester.tap(find.text('Pengukuran'));
+    await tester.pumpAndSettle();
     expect(find.text('Survei #1'), findsOneWidget);
 
     await tester.tap(find.text('Survei #1'));
@@ -190,7 +294,8 @@ void main() {
       ),
     ];
 
-    final decoded = jsonDecode(surveysToGeoJson(surveys)) as Map<String, Object?>;
+    final decoded =
+        jsonDecode(surveysToGeoJson(surveys)) as Map<String, Object?>;
     expect(decoded['type'], 'FeatureCollection');
     final features = decoded['features'] as List<Object?>;
     expect(features, hasLength(1));
@@ -204,9 +309,19 @@ void main() {
     });
     expect(feature['properties'], {
       'id': 1,
+      'point_code': '',
+      'point_name': '',
+      'notes': '',
       'latitude': -6.9,
       'longitude': 107.6,
       'elevation': -4.5,
+      'horizontal_accuracy_m': null,
+      'vertical_accuracy_m': null,
+      'fix_time_utc': '2026-11-16T03:00:00.000Z',
+      'provider': 'GPS',
+      'source': 'DEVICE',
+      'quality': 'ACCEPTED',
+      'project_id': 1,
       'created_at': '2026-11-16T03:00:00.000Z',
     });
   });

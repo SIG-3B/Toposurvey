@@ -12,6 +12,7 @@ class HistoryScreen extends StatefulWidget {
     required this.onReload,
     this.loadDetail,
     this.onDelete,
+    this.onExport,
     this.exporter = const GeoJsonExporter(),
   });
 
@@ -20,6 +21,7 @@ class HistoryScreen extends StatefulWidget {
   final VoidCallback onReload;
   final Future<Survey> Function(int)? loadDetail;
   final Future<void> Function(int)? onDelete;
+  final Future<void> Function(int)? onExport;
   final GeoJsonExporter exporter;
 
   @override
@@ -114,10 +116,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
                 TextButton.icon(
                   onPressed: () {
                     Navigator.pop(dialogContext);
-                    _showExportDialog(
-                      [target],
-                      title: 'Ekspor GeoJSON #${target.id}',
-                    );
+                    _showExportDialog([
+                      target,
+                    ], title: 'Ekspor GeoJSON #${target.id}');
                   },
                   icon: const Icon(Icons.download_outlined),
                   label: const Text('Ekspor GeoJSON'),
@@ -146,6 +147,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
       ),
     );
     if (!mounted || message == null || message.isEmpty) return;
+    await widget.onExport?.call(surveys.length);
+    if (!mounted) return;
     ScaffoldMessenger.of(context)
       ..clearSnackBars()
       ..showSnackBar(SnackBar(content: Text(message)));
@@ -403,7 +406,7 @@ class _ExportGeoJsonDialogState extends State<_ExportGeoJsonDialog> {
                           await widget.exporter.shareGeoJson(
                             surveys: widget.surveys,
                           );
-                          return null;
+                          return 'GeoJSON dibagikan.';
                         }),
                   icon: const Icon(Icons.share_outlined),
                   label: const Text('Bagikan'),

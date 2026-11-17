@@ -262,7 +262,7 @@ void main() {
     await tester.pump();
     expect(tester.widget<FilledButton>(saveButton).onPressed, isNull);
     location.positions.add(position(altitude: 0));
-    await tester.pump();
+    await tester.pumpAndSettle();
     expect(find.text('0.0 m'), findsOneWidget);
     expect(tester.widget<FilledButton>(saveButton).onPressed, isNotNull);
 
