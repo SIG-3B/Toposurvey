@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
 
 import 'models/survey.dart';
+import 'models/survey_preferences.dart';
 import 'screens/history_hub_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/map_screen.dart';
 import 'screens/data_survey_screen.dart';
+import 'screens/export_screen.dart';
+import 'screens/settings_screen.dart';
 import 'screens/survey_screen.dart';
 import 'services/api_service.dart';
 import 'services/local_database_service.dart';
@@ -171,11 +174,16 @@ class _SurveyTabsState extends State<_SurveyTabs> {
   bool _saving = false;
   LatLng? _lastGps;
   double? _lastGpsAccuracy;
+  SurveyPreferences _preferences = const SurveyPreferences();
+  final _preferencesStore = SurveyPreferencesStore();
 
   @override
   void initState() {
     super.initState();
     _history = _loadHistory();
+    _preferencesStore.load().then((preferences) {
+      if (mounted) setState(() => _preferences = preferences);
+    });
   }
 
   Future<List<Survey>>? _loadHistory() {
@@ -216,6 +224,11 @@ class _SurveyTabsState extends State<_SurveyTabs> {
 
   void _select(int index) => setState(() => _selected = index);
 
+  Future<void> _savePreferences(SurveyPreferences preferences) async {
+    await _preferencesStore.save(preferences);
+    if (mounted) setState(() => _preferences = preferences);
+  }
+
   @override
   Widget build(BuildContext context) {
     const titles = [
@@ -224,6 +237,8 @@ class _SurveyTabsState extends State<_SurveyTabs> {
       'Peta Survei',
       'Data Survei',
       'Riwayat Aktivitas',
+      'Ekspor Data',
+      'Pengaturan',
     ];
     return PopScope(
       canPop: _selected == 0,
@@ -231,7 +246,26 @@ class _SurveyTabsState extends State<_SurveyTabs> {
         if (!didPop && _selected != 0) _select(0);
       },
       child: Scaffold(
-        appBar: AppBar(title: Text(titles[_selected])),
+        appBar: AppBar(
+          title: Text(titles[_selected]),
+          actions: [
+            PopupMenuButton<String>(
+              tooltip: 'Lainnya',
+              icon: const Icon(Icons.more_vert),
+              onSelected: (value) => _select(switch (value) {
+                'history' => 4,
+                'export' => 5,
+                'settings' => 6,
+                _ => _selected,
+              }),
+              itemBuilder: (context) => const [
+                PopupMenuItem(value: 'history', child: Text('Riwayat')),
+                PopupMenuItem(value: 'export', child: Text('Ekspor Data')),
+                PopupMenuItem(value: 'settings', child: Text('Pengaturan')),
+              ],
+            ),
+          ],
+        ),
         body: SafeArea(
           top: false,
           bottom: false,
@@ -263,6 +297,10 @@ class _SurveyTabsState extends State<_SurveyTabs> {
                     storageUnavailable: snapshot.hasError,
                     onSave: widget.saveSurvey == null ? null : _save,
                     database: widget.database,
+                    accuracyThresholdMeters:
+                        _preferences.accuracyThresholdMeters,
+                    elevationUnit: _preferences.elevationUnit,
+                    showOpenStreetMap: _preferences.showOpenStreetMap,
                     onPositionChanged: (position) {
                       _lastGps = LatLng(position.latitude, position.longitude);
                       _lastGpsAccuracy = position.hasAccuracy
@@ -277,6 +315,8 @@ class _SurveyTabsState extends State<_SurveyTabs> {
                       database: widget.database,
                       userLocation: _lastGps,
                       accuracyMeters: _lastGpsAccuracy,
+                      elevationUnit: _preferences.elevationUnit,
+                      showOpenStreetMap: _preferences.showOpenStreetMap,
                     ),
                   ),
                   3 => _surveyDataState(
@@ -286,15 +326,27 @@ class _SurveyTabsState extends State<_SurveyTabs> {
                       database: widget.database,
                       onReload: _reload,
                       onAdd: () => _select(1),
+                      elevationUnit: _preferences.elevationUnit,
+                      onExport: () => _select(5),
                     ),
                   ),
-                  _ => HistoryHubScreen(
+                  4 => HistoryHubScreen(
                     snapshot: snapshot,
                     database: widget.database,
                     onStart: () => _select(1),
                     onReload: _reload,
                     loadDetail: widget.loadSurvey,
                     onDelete: widget.deleteSurvey == null ? null : _delete,
+                    elevationUnit: _preferences.elevationUnit,
+                  ),
+                  5 => ExportScreen(
+                    surveys: snapshot.data ?? const [],
+                    database: widget.database,
+                  ),
+                  _ => SettingsScreen(
+                    location: widget.location,
+                    preferences: _preferences,
+                    onSave: _savePreferences,
                   ),
                 },
               ),
@@ -302,7 +354,7 @@ class _SurveyTabsState extends State<_SurveyTabs> {
           ),
         ),
         bottomNavigationBar: NavigationBar(
-          selectedIndex: _selected,
+          selectedIndex: _selected <= 4 ? _selected : 0,
           onDestinationSelected: _select,
           destinations: const [
             NavigationDestination(

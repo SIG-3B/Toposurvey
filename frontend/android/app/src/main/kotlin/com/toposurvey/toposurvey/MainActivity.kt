@@ -17,6 +17,10 @@ import java.util.concurrent.Executors
 
 class MainActivity : FlutterActivity() {
     private val ioExecutor = Executors.newSingleThreadExecutor()
+    private val createDocumentRequestCode = 7416
+    private var pendingDocumentResult: MethodChannel.Result? = null
+    private var pendingDocumentContent: ByteArray? = null
+    private var pendingDocumentName: String? = null
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
@@ -80,6 +84,83 @@ class MainActivity : FlutterActivity() {
                     }
                 }
                 else -> result.notImplemented()
+            }
+        }
+
+        MethodChannel(
+            flutterEngine.dartExecutor.binaryMessenger,
+            "com.toposurvey.toposurvey/export",
+        ).setMethodCallHandler { call, result ->
+            if (call.method != "createDocument") {
+                result.notImplemented()
+                return@setMethodCallHandler
+            }
+            if (pendingDocumentResult != null) {
+                result.error("EXPORT_BUSY", "Pilih lokasi untuk ekspor yang sedang berlangsung.", null)
+                return@setMethodCallHandler
+            }
+            val fileName = call.argument<String>("fileName")
+            val mimeType = call.argument<String>("mimeType")
+            val content = call.argument<Any>("content")
+            val bytes = when (content) {
+                is ByteArray -> content
+                is String -> content.toByteArray(StandardCharsets.UTF_8)
+                else -> null
+            }
+            if (fileName.isNullOrBlank() || mimeType.isNullOrBlank() || bytes == null) {
+                result.error("INVALID_ARGS", "Nama, format, dan konten file harus tersedia.", null)
+                return@setMethodCallHandler
+            }
+            pendingDocumentResult = result
+            pendingDocumentContent = bytes
+            pendingDocumentName = fileName
+            try {
+                val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+                    addCategory(Intent.CATEGORY_OPENABLE)
+                    type = mimeType
+                    putExtra(Intent.EXTRA_TITLE, fileName)
+                }
+                startActivityForResult(intent, createDocumentRequestCode)
+            } catch (error: Exception) {
+                pendingDocumentResult = null
+                pendingDocumentContent = null
+                pendingDocumentName = null
+                result.error("PICKER_FAILED", error.message ?: "Pemilih file tidak dapat dibuka.", null)
+            }
+        }
+    }
+
+    @Deprecated("Deprecated in Android, retained for FlutterActivity result compatibility")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode != createDocumentRequestCode) return
+
+        val result = pendingDocumentResult ?: return
+        val bytes = pendingDocumentContent
+        val fileName = pendingDocumentName ?: "toposurvey_export"
+        pendingDocumentResult = null
+        pendingDocumentContent = null
+        pendingDocumentName = null
+        val uri = data?.data
+        if (resultCode != RESULT_OK || uri == null || bytes == null) {
+            result.success(null)
+            return
+        }
+
+        ioExecutor.execute {
+            try {
+                contentResolver.openOutputStream(uri, "w")?.use { stream ->
+                    stream.write(bytes)
+                } ?: throw IOException("Tidak dapat menulis file yang dipilih.")
+                runOnUiThread { result.success(fileName) }
+            } catch (error: Exception) {
+                runOnUiThread {
+                    result.error(
+                        "EXPORT_FAILED",
+                        error.message ?: "Gagal menyimpan file ekspor.",
+                        null,
+                    )
+                }
             }
         }
     }

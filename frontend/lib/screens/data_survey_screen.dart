@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../models/activity_log.dart';
 import '../models/survey.dart';
+import '../models/survey_preferences.dart';
 import '../services/local_database_service.dart';
 
 class DataSurveyScreen extends StatefulWidget {
@@ -11,11 +12,15 @@ class DataSurveyScreen extends StatefulWidget {
     required this.database,
     required this.onReload,
     required this.onAdd,
+    this.elevationUnit = ElevationUnit.meters,
+    this.onExport,
   });
   final List<Survey> surveys;
   final LocalDatabaseService? database;
   final VoidCallback onReload;
   final VoidCallback onAdd;
+  final ElevationUnit elevationUnit;
+  final VoidCallback? onExport;
 
   @override
   State<DataSurveyScreen> createState() => _DataSurveyScreenState();
@@ -24,6 +29,19 @@ class DataSurveyScreen extends StatefulWidget {
 class _DataSurveyScreenState extends State<DataSurveyScreen> {
   final _search = TextEditingController();
   int? _project;
+  DateTimeRange? _range;
+
+  Future<void> _chooseDates() async {
+    final today = DateUtils.dateOnly(DateTime.now());
+    final range = await showDateRangePicker(
+      context: context,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(today.year + 1),
+      initialDateRange: _range,
+      helpText: 'Filter tanggal penyimpanan',
+    );
+    if (range != null && mounted) setState(() => _range = range);
+  }
 
   @override
   void dispose() {
@@ -255,6 +273,9 @@ class _DataSurveyScreenState extends State<DataSurveyScreen> {
     );
   }
 
+  String _date(DateTime value) =>
+      '${value.day.toString().padLeft(2, '0')}/${value.month.toString().padLeft(2, '0')}/${value.year}';
+
   @override
   Widget build(BuildContext context) {
     final q = _search.text.toLowerCase();
@@ -262,6 +283,13 @@ class _DataSurveyScreenState extends State<DataSurveyScreen> {
         .where(
           (s) =>
               (_project == null || _project == s.projectId) &&
+              (_range == null ||
+                  (!DateUtils.dateOnly(
+                        s.createdAt.toLocal(),
+                      ).isBefore(DateUtils.dateOnly(_range!.start)) &&
+                      !DateUtils.dateOnly(
+                        s.createdAt.toLocal(),
+                      ).isAfter(DateUtils.dateOnly(_range!.end)))) &&
               '${s.pointCode} ${s.pointName} ${s.notes}'.toLowerCase().contains(
                 q,
               ),
@@ -278,7 +306,14 @@ class _DataSurveyScreenState extends State<DataSurveyScreen> {
           Wrap(
             alignment: WrapAlignment.end,
             spacing: 8,
+            runSpacing: 8,
             children: [
+              if (widget.onExport != null)
+                TextButton.icon(
+                  onPressed: widget.onExport,
+                  icon: const Icon(Icons.file_download_outlined),
+                  label: const Text('Ekspor'),
+                ),
               TextButton.icon(
                 onPressed: _manageProjects,
                 icon: const Icon(Icons.folder_open_outlined),
@@ -301,6 +336,24 @@ class _DataSurveyScreenState extends State<DataSurveyScreen> {
             border: OutlineInputBorder(),
           ),
         ),
+        const SizedBox(height: 8),
+        OutlinedButton.icon(
+          onPressed: _chooseDates,
+          icon: const Icon(Icons.calendar_month_outlined),
+          label: Text(
+            _range == null
+                ? 'Filter tanggal'
+                : '${_date(_range!.start)} – ${_date(_range!.end)}',
+          ),
+        ),
+        if (_range != null)
+          Align(
+            alignment: Alignment.centerRight,
+            child: TextButton(
+              onPressed: () => setState(() => _range = null),
+              child: const Text('Hapus filter tanggal'),
+            ),
+          ),
         FutureBuilder<List<SurveyProject>>(
           future: widget.database?.loadProjects(),
           builder: (context, snapshot) {
@@ -338,7 +391,7 @@ class _DataSurveyScreenState extends State<DataSurveyScreen> {
             child: ListTile(
               title: Text('${s.pointCode} · ${s.pointName}'),
               subtitle: Text(
-                '${s.measurement.latitude.toStringAsFixed(6)}, ${s.measurement.longitude.toStringAsFixed(6)}\nElevasi ${s.measurement.elevation.toStringAsFixed(1)} m · Akurasi ±${s.horizontalAccuracy?.toStringAsFixed(1) ?? '—'} m\nFix ${s.fixTime?.toLocal()} · ${s.provider} · ${s.quality}${s.notes.isEmpty ? '' : '\n${s.notes}'}',
+                '${s.measurement.latitude.toStringAsFixed(6)}, ${s.measurement.longitude.toStringAsFixed(6)}\nElevasi ${widget.elevationUnit.fromMeters(s.measurement.elevation).toStringAsFixed(1)} ${widget.elevationUnit.symbol} · Akurasi ±${s.horizontalAccuracy?.toStringAsFixed(1) ?? '—'} m\nFix ${s.fixTime?.toLocal()} · ${s.provider} · ${s.quality}${s.notes.isEmpty ? '' : '\n${s.notes}'}',
               ),
               isThreeLine: true,
               onTap: () => showDialog<void>(
@@ -346,7 +399,7 @@ class _DataSurveyScreenState extends State<DataSurveyScreen> {
                 builder: (c) => AlertDialog(
                   title: Text('${s.pointCode} · ${s.pointName}'),
                   content: Text(
-                    'Latitude: ${s.measurement.latitude}\nLongitude: ${s.measurement.longitude}\nElevasi: ${s.measurement.elevation} m\nAkurasi horizontal: ${s.horizontalAccuracy ?? '—'}\nAkurasi vertikal: ${s.verticalAccuracy ?? '—'}\nWaktu GPS: ${s.fixTime?.toLocal()}\nWaktu simpan: ${s.createdAt.toLocal()}\nSumber: ${s.source}\nKualitas: ${s.quality}\nProyek: ${s.projectId}\nCatatan: ${s.notes}',
+                    'Latitude: ${s.measurement.latitude}\nLongitude: ${s.measurement.longitude}\nElevasi: ${widget.elevationUnit.fromMeters(s.measurement.elevation).toStringAsFixed(1)} ${widget.elevationUnit.symbol}\nAkurasi horizontal: ${s.horizontalAccuracy ?? '—'}\nAkurasi vertikal: ${s.verticalAccuracy ?? '—'}\nWaktu GPS: ${s.fixTime?.toLocal()}\nWaktu simpan: ${s.createdAt.toLocal()}\nSumber: ${s.source}\nKualitas: ${s.quality}\nProyek: ${s.projectId}\nCatatan: ${s.notes}',
                   ),
                   actions: [
                     TextButton(

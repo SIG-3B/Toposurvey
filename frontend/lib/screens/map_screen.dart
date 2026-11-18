@@ -3,6 +3,7 @@ import 'package:latlong2/latlong.dart';
 
 import '../models/activity_log.dart';
 import '../models/survey.dart';
+import '../models/survey_preferences.dart';
 import '../services/local_database_service.dart';
 import '../widgets/survey_map.dart';
 
@@ -13,11 +14,15 @@ class MapScreen extends StatefulWidget {
     this.database,
     this.userLocation,
     this.accuracyMeters,
+    this.elevationUnit = ElevationUnit.meters,
+    this.showOpenStreetMap = true,
   });
   final List<Survey> surveys;
   final LocalDatabaseService? database;
   final LatLng? userLocation;
   final double? accuracyMeters;
+  final ElevationUnit elevationUnit;
+  final bool showOpenStreetMap;
   @override
   State<MapScreen> createState() => _MapScreenState();
 }
@@ -63,6 +68,7 @@ class _MapScreenState extends State<MapScreen> {
           userLocation: widget.userLocation,
           accuracyMeters: widget.accuracyMeters,
           expand: true,
+          showOpenStreetMap: widget.showOpenStreetMap,
           focusSurvey: _selected,
           onSurveyTap: (s) => setState(() => _selected = s),
         ),
@@ -71,7 +77,7 @@ class _MapScreenState extends State<MapScreen> {
             child: ListTile(
               title: Text('${_selected!.pointCode} · ${_selected!.pointName}'),
               subtitle: Text(
-                'Lat ${_selected!.measurement.latitude}\nLon ${_selected!.measurement.longitude}\nElevasi ${_selected!.measurement.elevation} m · ${_selected!.fixTime?.toLocal()}',
+                'Lat ${_selected!.measurement.latitude}\nLon ${_selected!.measurement.longitude}\nElevasi ${widget.elevationUnit.fromMeters(_selected!.measurement.elevation).toStringAsFixed(1)} ${widget.elevationUnit.symbol} · ${_selected!.fixTime?.toLocal()}',
               ),
               isThreeLine: true,
             ),
@@ -93,7 +99,7 @@ class _MapScreenState extends State<MapScreen> {
             leading: const Icon(Icons.location_on_outlined),
             title: Text('${s.pointCode} · ${s.pointName}'),
             subtitle: Text(
-              '${s.measurement.latitude.toStringAsFixed(6)}, ${s.measurement.longitude.toStringAsFixed(6)} · ${s.measurement.elevation.toStringAsFixed(1)} m',
+              '${s.measurement.latitude.toStringAsFixed(6)}, ${s.measurement.longitude.toStringAsFixed(6)} · ${widget.elevationUnit.fromMeters(s.measurement.elevation).toStringAsFixed(1)} ${widget.elevationUnit.symbol}',
             ),
             onTap: () => setState(() => _selected = s),
           ),

@@ -237,9 +237,13 @@ class LocalDatabaseService {
       ..sort((a, b) => b.id.compareTo(a.id));
   }
 
-  Future<void> logExport(int? projectId, int count) async {
+  Future<void> logExport(
+    int? projectId,
+    int count, {
+    String format = 'GeoJSON',
+  }) async {
     final state = await _load();
-    _log(state, 'EXPORT', '$count titik diekspor ke GeoJSON', null, projectId);
+    _log(state, 'EXPORT', '$count titik diekspor ke $format', null, projectId);
     await _save();
   }
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/activity_log.dart';
 import '../models/survey.dart';
+import '../models/survey_preferences.dart';
 import '../services/local_database_service.dart';
 import 'history_screen.dart';
 
@@ -13,6 +14,7 @@ class HistoryHubScreen extends StatefulWidget {
     required this.onReload,
     this.loadDetail,
     this.onDelete,
+    this.elevationUnit = ElevationUnit.meters,
   });
   final AsyncSnapshot<List<Survey>> snapshot;
   final LocalDatabaseService? database;
@@ -20,6 +22,7 @@ class HistoryHubScreen extends StatefulWidget {
   final VoidCallback onReload;
   final Future<Survey> Function(int)? loadDetail;
   final Future<void> Function(int)? onDelete;
+  final ElevationUnit elevationUnit;
   @override
   State<HistoryHubScreen> createState() => _HistoryHubScreenState();
 }
@@ -37,7 +40,7 @@ class _HistoryHubScreenState extends State<HistoryHubScreen> {
         builder: (c) => AlertDialog(
           title: Text('${survey.pointCode} · ${survey.pointName}'),
           content: Text(
-            'Latitude ${survey.measurement.latitude}\nLongitude ${survey.measurement.longitude}\nElevasi ${survey.measurement.elevation} m\n${survey.createdAt.toLocal()}',
+            'Latitude ${survey.measurement.latitude}\nLongitude ${survey.measurement.longitude}\nElevasi ${widget.elevationUnit.fromMeters(survey.measurement.elevation).toStringAsFixed(1)} ${widget.elevationUnit.symbol}\n${survey.createdAt.toLocal()}',
           ),
           actions: [
             TextButton(
@@ -64,6 +67,7 @@ class _HistoryHubScreenState extends State<HistoryHubScreen> {
         onReload: widget.onReload,
         loadDetail: widget.loadDetail,
         onDelete: widget.onDelete,
+        elevationUnit: widget.elevationUnit,
       );
     }
     return DefaultTabController(
@@ -129,12 +133,19 @@ class _HistoryHubScreenState extends State<HistoryHubScreen> {
                                 'EXPORT' => Icons.download_outlined,
                                 _ => Icons.folder_outlined,
                               }),
-                              title: Text(a.action),
+                              title: Text(switch (a.action) {
+                                'CREATE' => 'Titik ditambahkan',
+                                'EDIT' => 'Titik diperbarui',
+                                'DELETE' => 'Titik dihapus',
+                                'EXPORT' => 'Data diekspor',
+                                'PROJECT' => 'Proyek diubah',
+                                _ => a.action,
+                              }),
                               subtitle: Text(
                                 '${a.description}\n${a.createdAt.toLocal()} · Proyek ${a.projectId ?? '—'}',
                               ),
                               isThreeLine: true,
-                              onTap: a.surveyId == null
+                              onTap: a.surveyId == null || a.action == 'DELETE'
                                   ? null
                                   : () => _activityDetail(a),
                             ),
@@ -151,6 +162,7 @@ class _HistoryHubScreenState extends State<HistoryHubScreen> {
                   loadDetail: widget.loadDetail,
                   onDelete: widget.onDelete,
                   onExport: _logExport,
+                  elevationUnit: widget.elevationUnit,
                 ),
               ],
             ),

@@ -15,6 +15,7 @@ class SurveyMap extends StatefulWidget {
     this.onSurveyTap,
     this.expand = false,
     this.focusSurvey,
+    this.showOpenStreetMap = true,
   });
 
   final LatLng? userLocation;
@@ -24,6 +25,7 @@ class SurveyMap extends StatefulWidget {
   final ValueChanged<Survey>? onSurveyTap;
   final bool expand;
   final Survey? focusSurvey;
+  final bool showOpenStreetMap;
 
   @override
   State<SurveyMap> createState() => _SurveyMapState();
@@ -189,7 +191,7 @@ class _SurveyMapState extends State<SurveyMap> {
                     ),
                   ),
                   children: [
-                    _tiles,
+                    if (widget.showOpenStreetMap) _tiles,
                     if (fix != null && accuracy != null && accuracy > 0)
                       CircleLayer(
                         circles: [
@@ -228,6 +230,22 @@ class _SurveyMapState extends State<SurveyMap> {
                     ),
                   ],
                 ),
+                if (!widget.showOpenStreetMap)
+                  Positioned(
+                    left: 8,
+                    bottom: 8,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: colors.surface,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const Text('Peta dasar dinonaktifkan'),
+                    ),
+                  ),
                 Positioned(
                   top: 8,
                   left: 8,

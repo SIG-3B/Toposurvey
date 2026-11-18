@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../models/survey.dart';
+import '../models/survey_preferences.dart';
 import '../services/api_service.dart';
 import '../services/geojson_exporter.dart';
 
@@ -14,6 +15,7 @@ class HistoryScreen extends StatefulWidget {
     this.onDelete,
     this.onExport,
     this.exporter = const GeoJsonExporter(),
+    this.elevationUnit = ElevationUnit.meters,
   });
 
   final AsyncSnapshot<List<Survey>> snapshot;
@@ -23,6 +25,7 @@ class HistoryScreen extends StatefulWidget {
   final Future<void> Function(int)? onDelete;
   final Future<void> Function(int)? onExport;
   final GeoJsonExporter exporter;
+  final ElevationUnit elevationUnit;
 
   @override
   State<HistoryScreen> createState() => _HistoryScreenState();
@@ -163,7 +166,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
         const SizedBox(height: 8),
         Text('Garis Bujur: ${data.longitude.toStringAsFixed(6)}°'),
         const SizedBox(height: 8),
-        Text('Ketinggian: ${data.elevation.toStringAsFixed(1)} m'),
+        Text(
+          'Ketinggian: ${widget.elevationUnit.fromMeters(data.elevation).toStringAsFixed(1)} ${widget.elevationUnit.symbol}',
+        ),
         const SizedBox(height: 8),
         Text('Waktu tersimpan: ${_localTime(survey.createdAt)}'),
       ],
@@ -255,7 +260,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   child: Text(
                     'Lintang ${data.latitude.toStringAsFixed(6)}°\n'
                     'Bujur ${data.longitude.toStringAsFixed(6)}°\n'
-                    'Ketinggian ${data.elevation.toStringAsFixed(1)} m\n'
+                    'Ketinggian ${widget.elevationUnit.fromMeters(data.elevation).toStringAsFixed(1)} ${widget.elevationUnit.symbol}\n'
                     '${_localTime(survey.createdAt)}',
                   ),
                 ),

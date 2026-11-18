@@ -335,9 +335,13 @@ class LocalDatabaseService {
         .toList();
   }
 
-  Future<void> logExport(int? projectId, int count) async {
+  Future<void> logExport(
+    int? projectId,
+    int count, {
+    String format = 'GeoJSON',
+  }) async {
     final db = await _ensureDatabase();
-    _log(db, 'EXPORT', '$count titik diekspor ke GeoJSON', null, projectId);
+    _log(db, 'EXPORT', '$count titik diekspor ke $format', null, projectId);
   }
 
   void _log(

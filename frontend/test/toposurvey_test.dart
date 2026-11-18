@@ -156,6 +156,34 @@ void main() {
     await unmount(tester, location);
   });
 
+  testWidgets('Menu Lainnya opens Export Data and Settings', (tester) async {
+    final location = TestLocation();
+    await tester.pumpWidget(TopoSurveyApp(location: location));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byTooltip('Lainnya'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Ekspor Data').last);
+    await tester.pumpAndSettle();
+    expect(find.text('Ekspor data survei'), findsOneWidget);
+    expect(find.text('Format file'), findsOneWidget);
+
+    await tester.tap(find.byTooltip('Lainnya'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Pengaturan').last);
+    await tester.pumpAndSettle();
+    expect(
+      find.descendant(
+        of: find.byType(AppBar),
+        matching: find.text('Pengaturan'),
+      ),
+      findsOneWidget,
+    );
+    expect(find.text('Ambang akurasi horizontal'), findsOneWidget);
+    expect(find.text('Satuan elevasi'), findsOneWidget);
+    await unmount(tester, location);
+  });
+
   testWidgets('Denied access requests permission and handles blocked access', (
     tester,
   ) async {

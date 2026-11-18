@@ -7,6 +7,7 @@ import 'package:latlong2/latlong.dart';
 
 import '../models/activity_log.dart';
 import '../models/survey.dart';
+import '../models/survey_preferences.dart';
 import '../services/api_service.dart';
 import '../services/location_service.dart';
 import '../services/local_database_service.dart';
@@ -22,6 +23,9 @@ class SurveyScreen extends StatefulWidget {
     this.onSave,
     this.database,
     this.onPositionChanged,
+    this.accuracyThresholdMeters = 10,
+    this.elevationUnit = ElevationUnit.meters,
+    this.showOpenStreetMap = true,
   });
 
   final LocationService location;
@@ -31,6 +35,9 @@ class SurveyScreen extends StatefulWidget {
   final Future<Survey> Function(SurveyMeasurement)? onSave;
   final LocalDatabaseService? database;
   final ValueChanged<Position>? onPositionChanged;
+  final double accuracyThresholdMeters;
+  final ElevationUnit elevationUnit;
+  final bool showOpenStreetMap;
 
   @override
   State<SurveyScreen> createState() => _SurveyScreenState();
@@ -343,6 +350,17 @@ class _SurveyScreenState extends State<SurveyScreen> {
                     color: colors.onSurfaceVariant,
                   ),
                 ),
+                if (accuracy != null &&
+                    accuracy > widget.accuracyThresholdMeters)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 6),
+                    child: Text(
+                      'Akurasi melewati ambang ${widget.accuracyThresholdMeters.round()} m. Titik akan ditandai kualitas rendah.',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: colors.error,
+                      ),
+                    ),
+                  ),
                 const SizedBox(height: 16),
                 SurveyMap(
                   userLocation: validLatitude && validLongitude
@@ -350,6 +368,7 @@ class _SurveyScreenState extends State<SurveyScreen> {
                       : null,
                   accuracyMeters: accuracy,
                   savedSurveys: widget.savedSurveys,
+                  showOpenStreetMap: widget.showOpenStreetMap,
                 ),
                 const SizedBox(height: 12),
                 DecoratedBox(
@@ -379,7 +398,7 @@ class _SurveyScreenState extends State<SurveyScreen> {
                         label: 'Ketinggian',
                         value: altitude == null
                             ? '—'
-                            : '${altitude.toStringAsFixed(1)} m',
+                            : '${widget.elevationUnit.fromMeters(altitude).toStringAsFixed(1)} ${widget.elevationUnit.symbol}',
                         note: 'Relatif terhadap elipsoid WGS 84',
                       ),
                     ],
@@ -453,7 +472,9 @@ class _SurveyScreenState extends State<SurveyScreen> {
                             projectId: _projectId,
                             provider: position.isMocked ? 'MOCK' : 'GPS',
                             source: position.isMocked ? 'SIMULATED' : 'DEVICE',
-                            quality: accuracy != null && accuracy > 10
+                            quality:
+                                accuracy != null &&
+                                    accuracy > widget.accuracyThresholdMeters
                                 ? 'LOW_QUALITY'
                                 : 'ACCEPTED',
                           ),
