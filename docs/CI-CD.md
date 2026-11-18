@@ -40,7 +40,7 @@ Buat keystore, misalnya:
 
 ```sh
 keytool -genkeypair -v \
-  -keystore toposurvey-release.jks \
+  -keystore frontend/android/toposurvey-release.jks \
   -keyalg RSA -keysize 2048 -validity 10000 \
   -alias toposurvey
 ```
@@ -59,7 +59,7 @@ Di PowerShell, encoding dapat dibuat tanpa memasukkannya sebagai argumen
 command-line:
 
 ```powershell
-$encoded = [Convert]::ToBase64String([IO.File]::ReadAllBytes(".\toposurvey-release.jks"))
+$encoded = [Convert]::ToBase64String([IO.File]::ReadAllBytes(".\frontend\android\toposurvey-release.jks"))
 $encoded | gh secret set ANDROID_KEYSTORE_BASE64 --repo SIG-3B/Toposurvey
 Remove-Variable encoded
 ```
