@@ -4,6 +4,10 @@
 [![CodeQL](https://github.com/SIG-3B/Toposurvey/actions/workflows/codeql.yml/badge.svg?branch=main)](https://github.com/SIG-3B/Toposurvey/actions/workflows/codeql.yml)
 [![GitHub Pages](https://github.com/SIG-3B/Toposurvey/actions/workflows/pages.yml/badge.svg?branch=main)](https://github.com/SIG-3B/Toposurvey/actions/workflows/pages.yml)
 
+<p align="center">
+  <img src="docs/assets/toposurvey-hero.gif" alt="Animasi garis kontur topografi dengan marker GPS TopoSurvey" width="100%">
+</p>
+
 > **Aplikasi survei topografi berbasis Android** untuk mengambil koordinat dan
 > elevasi, melihat titik ukur di peta, dan mengelola hasil survei—tetap bisa
 > digunakan **secara offline**.
