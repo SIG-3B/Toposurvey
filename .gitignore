@@ -4,6 +4,13 @@ __pycache__/
 .venv/
 backend/*.sqlite3*
 
+# Android release signing material
+frontend/android/key.properties
+frontend/android/*.jks
+frontend/android/*.keystore
+frontend/android/app/*.jks
+frontend/android/app/*.keystore
+
 # Local editor and environment files
 .idea/
 .vscode/
