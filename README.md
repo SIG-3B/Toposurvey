@@ -37,9 +37,8 @@ APK siap pasang dapat diunduh langsung melalui halaman rilis GitHub berikut:
   memicu release. Jalankan manual dari tab **Actions** pada branch `main` untuk
   memilih jenis kenaikan versi.
 - Dependabot memperbarui dependensi dan GitHub Actions. CodeQL memindai kode
-  serta workflow; Dependency Review memeriksa perubahan dependensi pada pull
-  request. Panduan signing, secrets, release, dan perlindungan branch ada di
-  [docs/CI-CD.md](docs/CI-CD.md).
+  serta workflow. Panduan signing, secrets, release, dan perlindungan branch
+  ada di [docs/CI-CD.md](docs/CI-CD.md).
 
 ---
 

@@ -8,7 +8,6 @@
 | `Android Release` | Push ke `main` yang mengubah `frontend/**`, atau `workflow_dispatch` pada `main` | Validasi, signing, build APK, tag SemVer, checksum, dan GitHub Release |
 | `Deploy GitHub Pages` | Perubahan `docs/**` pada `main`, atau `workflow_dispatch` | Deploy `docs/` |
 | `CodeQL Security Scan` | Pull request, push ke `main`, dan mingguan | Analisis GitHub Actions, JavaScript/TypeScript, dan Python |
-| `Dependency Review` | Pull request ke `main` | Menolak perubahan dependensi dengan kerentanan tingkat tinggi atau lebih |
 
 Perubahan dokumentasi saja tidak menjalankan workflow rilis APK. Rilis manual
 tersedia pada **Actions → Android Release → Run workflow** di branch `main`;
@@ -83,5 +82,5 @@ berjalan sehingga status check tersebut tersedia untuk dipilih.
 
 `.github/dependabot.yml` memeriksa pembaruan GitHub Actions, Flutter Pub, dan
 Python Pip setiap minggu. CodeQL berjalan pada setiap pull request, push ke
-`main`, dan secara terjadwal; Dependency Review menilai perubahan dependensi
-pada pull request. Tinjau hasil pemindaian dan Dependabot sebelum merge.
+`main`, dan secara terjadwal. Tinjau hasil pemindaian dan Dependabot sebelum
+merge.
