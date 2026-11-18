@@ -5,12 +5,13 @@
 | Workflow | Pemicu | Fungsi |
 |---|---|---|
 | `Flutter CI` | Pull request ke `main` dan pemanggilan dari workflow release | `flutter analyze` dan `flutter test` |
-| `Android Release` | Push ke `main` yang mengubah `frontend/**`, atau `workflow_dispatch` pada `main` | Validasi, signing, build APK, tag SemVer, checksum, dan GitHub Release |
+| `Android Release` | Push ke `main` yang mengubah kode/aset, pubspec, atau sumber Android aplikasi, atau `workflow_dispatch` pada `main` | Validasi, signing, build APK, tag SemVer, checksum, dan GitHub Release |
 | `Deploy GitHub Pages` | Perubahan `docs/**` pada `main`, atau `workflow_dispatch` | Deploy `docs/` |
 | `CodeQL Security Scan` | Pull request, push ke `main`, dan mingguan | Analisis GitHub Actions, JavaScript/TypeScript, dan Python |
 
-Perubahan dokumentasi saja tidak menjalankan workflow rilis APK. Rilis manual
-tersedia pada **Actions → Android Release → Run workflow** di branch `main`;
+Perubahan dokumentasi dan konfigurasi build saja tidak menjalankan workflow
+rilis APK. Rilis manual tersedia pada **Actions → Android Release → Run
+workflow** di branch `main`;
 pilih `auto`, `patch`, `minor`, atau `major`. Mode `auto` menggunakan konvensi
 commit: `BREAKING CHANGE`/`#major` menaikkan major, `feat:`/`#minor` menaikkan
 minor, dan perubahan lainnya menaikkan patch. Tag pertama menggunakan versi

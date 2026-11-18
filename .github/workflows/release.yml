@@ -5,7 +5,11 @@ on:
     branches:
       - main
     paths:
-      - "frontend/**"
+      - "frontend/lib/**"
+      - "frontend/assets/**"
+      - "frontend/pubspec.yaml"
+      - "frontend/pubspec.lock"
+      - "frontend/android/app/src/**"
   workflow_dispatch:
     inputs:
       bump_type:

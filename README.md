@@ -32,10 +32,10 @@ APK siap pasang dapat diunduh langsung melalui halaman rilis GitHub berikut:
 - `.github/workflows/ci.yml` menjalankan analisis dan tes Flutter pada pull
   request. `.github/workflows/release.yml` menjalankan tes yang sama sebelum
   membuat tag SemVer, membangun APK release bertanda tangan permanen, dan
-  menerbitkan satu `TopoSurvey.apk` beserta checksum SHA-256. Build APK otomatis
-  hanya berjalan jika file di `frontend/` berubah; dokumentasi saja tidak
-  memicu release. Jalankan manual dari tab **Actions** pada branch `main` untuk
-  memilih jenis kenaikan versi.
+  menerbitkan satu `TopoSurvey.apk` beserta checksum SHA-256. Rilis APK otomatis
+  berjalan saat kode, aset, dependensi, atau sumber Android aplikasi berubah;
+  dokumentasi dan konfigurasi build saja tidak memicu release. Jalankan manual
+  dari tab **Actions** pada branch `main` untuk memilih jenis kenaikan versi.
 - Dependabot memperbarui dependensi dan GitHub Actions. CodeQL memindai kode
   serta workflow. Panduan signing, secrets, release, dan perlindungan branch
   ada di [docs/CI-CD.md](docs/CI-CD.md).
