@@ -9,13 +9,13 @@ Ukur lintang, bujur, dan elevasi, lalu lihat posisi serta titik tersimpan di
 peta. Riwayat menyediakan detail dan penghapusan survei secara langsung dari
 penyimpanan lokal perangkat tanpa perlu koneksi server.
 
-## Unduh APK (GitHub Release)
+## Unduh APK (GitHub Release terbaru)
 
 APK siap pasang dapat diunduh langsung melalui halaman rilis GitHub berikut:
 
-- **Halaman Rilis (`v1.1.0`):** [GitHub Release v1.1.0](https://github.com/SIG-3B/Toposurvey/releases/tag/v1.1.0)
-- **Unduh Langsung APK:** [TopoSurvey-v1.1.0.apk](https://github.com/SIG-3B/Toposurvey/releases/download/v1.1.0/TopoSurvey-v1.1.0.apk)
-- **Semua Rilis Terbaru:** [GitHub Releases](https://github.com/SIG-3B/Toposurvey/releases)
+- **Halaman Rilis Terbaru:** [GitHub Releases](https://github.com/SIG-3B/Toposurvey/releases/latest)
+- **Unduh APK Terbaru:** [app-release.apk](https://github.com/SIG-3B/Toposurvey/releases/latest/download/app-release.apk)
+- **Riwayat Semua Rilis:** [GitHub Releases](https://github.com/SIG-3B/Toposurvey/releases)
 
 ## Landing Page & Otomatisasi GitHub
 
@@ -25,10 +25,10 @@ APK siap pasang dapat diunduh langsung melalui halaman rilis GitHub berikut:
 - Untuk deployment pertama, buka **Settings → Pages**, lalu pilih **GitHub
   Actions** sebagai sumber build. Workflow juga dapat dijalankan manual dari tab
   **Actions**.
-- `.github/workflows/release.yml` menjalankan analisis dan tes Flutter, membuat
-  tag versi otomatis, membangun APK release, lalu menerbitkan GitHub Release
-  saat ada push ke `main`. Jalankan manual dari tab **Actions** untuk memilih
-  jenis kenaikan versi.
+- `.github/workflows/release.yml` menjalankan analisis dan tes Flutter pada
+  pull request ke `main`. Push ke `main` membuat tag versi otomatis, membangun
+  APK release, lalu menerbitkan GitHub Release. Jalankan manual dari tab
+  **Actions** pada branch `main` untuk memilih jenis kenaikan versi.
 
 ---
 
@@ -51,7 +51,7 @@ Dari root proyek di PowerShell:
 cd backend
 python -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt
-.\.venv\Scripts\python.exe -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+.\.venv\Scripts\python.exe -m uvicorn main:app --host 127.0.0.1 --port 8000 --reload
 ```
 
 Buka terminal lain untuk memeriksa endpoint:
@@ -82,7 +82,10 @@ Invoke-RestMethod "http://127.0.0.1:8000/api/surveys/$($survey.id)"
 
 Kirim `latitude` dari −90 hingga 90, `longitude` dari −180 hingga 180,
 serta `elevation` dalam meter sebagai angka JSON. Elevasi negatif diterima.
-Jika elevasi tidak tersedia, permintaan ditolak dengan `422`. Server menetapkan
+Backend pengembangan tidak memakai autentikasi dan sebaiknya hanya diakses
+melalui `127.0.0.1`; jangan bind ke `0.0.0.0` atau mengeksposnya ke jaringan
+publik tanpa menambahkan autentikasi dan kontrol akses. Jika elevasi tidak
+tersedia, permintaan ditolak dengan `422`. Server menetapkan
 `created_at` dalam format ISO 8601 UTC saat menyimpan survei. ID yang tidak
 ditemukan menghasilkan `404`. Gangguan SQLite saat server berjalan
 menghasilkan `503`. Dokumentasi interaktif tersedia di `/docs`.

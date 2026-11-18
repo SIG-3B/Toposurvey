@@ -1,7 +1,8 @@
-const CACHE_NAME = 'toposurvey-shell-v1';
+const CACHE_PREFIX = 'toposurvey-prototype-';
+const CACHE_NAME = `${CACHE_PREFIX}shell-v2`;
 const STATIC_FILES = ['./', './index.html', './styles.css', './app.js', './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png'];
 self.addEventListener('install', e => {e.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll(STATIC_FILES)).then(() => self.skipWaiting()));});
-self.addEventListener('activate', e => {e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k=>k!==CACHE_NAME).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));});
+self.addEventListener('activate', e => {e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k=>k==='toposurvey-shell-v1'||k.startsWith(CACHE_PREFIX)&&k!==CACHE_NAME).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));});
 self.addEventListener('fetch', e => {
   const req=e.request;
   if(req.method!=='GET' || new URL(req.url).origin!==self.location.origin)return;

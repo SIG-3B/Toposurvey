@@ -69,4 +69,4 @@ README.md               Petunjuk dan batasan
 
 ## Privasi
 
-Tidak memakai backend. Pembacaan GPS terjadi atas tindakan pengguna. Titik disimpan dalam storage browser. Jika membuka peta OSM online, tile dimuat dari `tile.openstreetmap.org` (layanan pihak ketiga). Untuk penggunaan yang membutuhkan perlindungan data lokasi khusus, lakukan peninjauan keamanan dan migrasikan penyimpanan ke database native terenkripsi sesuai kebutuhan.
+Tidak memakai backend. Pembacaan GPS terjadi atas tindakan pengguna. Titik disimpan dalam storage browser. Jika membuka peta OSM online, tile dimuat dari `tile.openstreetmap.org`; stylesheet juga meminta font dari Google Fonts saat online. Keduanya adalah layanan pihak ketiga. Untuk penggunaan yang membutuhkan perlindungan data lokasi khusus, lakukan peninjauan keamanan dan migrasikan penyimpanan ke database native terenkripsi sesuai kebutuhan.
