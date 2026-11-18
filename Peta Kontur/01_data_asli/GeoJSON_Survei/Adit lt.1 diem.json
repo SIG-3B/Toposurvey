@@ -1,0 +1,24 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "id": 2,
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          107.5755316,
+          -6.8734449,
+          845.8999633789062
+        ]
+      },
+      "properties": {
+        "id": 2,
+        "latitude": -6.8734449,
+        "longitude": 107.5755316,
+        "elevation": 845.8999633789062,
+        "created_at": "2026-11-17T08:09:10.251186Z"
+      }
+    }
+  ]
+}
