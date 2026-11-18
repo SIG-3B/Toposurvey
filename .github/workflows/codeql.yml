@@ -1,6 +1,6 @@
 name: CodeQL Security Scan
 
-on:
+"on":
   push:
     branches:
       - main
