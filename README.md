@@ -1,5 +1,9 @@
 # TopoSurvey
 
+[![Flutter CI](https://github.com/SIG-3B/Toposurvey/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/SIG-3B/Toposurvey/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/SIG-3B/Toposurvey/actions/workflows/codeql.yml/badge.svg?branch=main)](https://github.com/SIG-3B/Toposurvey/actions/workflows/codeql.yml)
+[![GitHub Pages](https://github.com/SIG-3B/Toposurvey/actions/workflows/pages.yml/badge.svg?branch=main)](https://github.com/SIG-3B/Toposurvey/actions/workflows/pages.yml)
+
 Aplikasi Android Material 3 untuk mengukur koordinat dan elevasi dengan layanan
 lokasi ponsel, menampilkan posisi di peta OpenStreetMap, dan menyimpan hasil
 survei secara **lokal & offline menggunakan SQLite di perangkat**. Proyek ini juga
@@ -14,7 +18,7 @@ penyimpanan lokal perangkat tanpa perlu koneksi server.
 APK siap pasang dapat diunduh langsung melalui halaman rilis GitHub berikut:
 
 - **Halaman Rilis Terbaru:** [GitHub Releases](https://github.com/SIG-3B/Toposurvey/releases/latest)
-- **Unduh APK Terbaru:** [app-release.apk](https://github.com/SIG-3B/Toposurvey/releases/latest/download/app-release.apk)
+- **Unduh APK Terbaru:** [Pilih APK dan checksum pada rilis terbaru](https://github.com/SIG-3B/Toposurvey/releases/latest)
 - **Riwayat Semua Rilis:** [GitHub Releases](https://github.com/SIG-3B/Toposurvey/releases)
 
 ## Landing Page & Otomatisasi GitHub
@@ -25,10 +29,17 @@ APK siap pasang dapat diunduh langsung melalui halaman rilis GitHub berikut:
 - Untuk deployment pertama, buka **Settings → Pages**, lalu pilih **GitHub
   Actions** sebagai sumber build. Workflow juga dapat dijalankan manual dari tab
   **Actions**.
-- `.github/workflows/release.yml` menjalankan analisis dan tes Flutter pada
-  pull request ke `main`. Push ke `main` membuat tag versi otomatis, membangun
-  APK release, lalu menerbitkan GitHub Release. Jalankan manual dari tab
-  **Actions** pada branch `main` untuk memilih jenis kenaikan versi.
+- `.github/workflows/ci.yml` menjalankan analisis dan tes Flutter pada pull
+  request. `.github/workflows/release.yml` menjalankan tes yang sama sebelum
+  membuat tag SemVer, membangun APK release bertanda tangan permanen, dan
+  menerbitkan satu `TopoSurvey.apk` beserta checksum SHA-256. Build APK otomatis
+  hanya berjalan jika file di `frontend/` berubah; dokumentasi saja tidak
+  memicu release. Jalankan manual dari tab **Actions** pada branch `main` untuk
+  memilih jenis kenaikan versi.
+- Dependabot memperbarui dependensi dan GitHub Actions. CodeQL memindai kode
+  serta workflow; Dependency Review memeriksa perubahan dependensi pada pull
+  request. Panduan signing, secrets, release, dan perlindungan branch ada di
+  [docs/CI-CD.md](docs/CI-CD.md).
 
 ---
 
